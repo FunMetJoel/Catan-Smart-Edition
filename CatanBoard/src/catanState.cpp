@@ -67,7 +67,7 @@ corner::corner(byte player, byte level) {
 }
 
 player::player() {
-    type = playerType::NONE;
+    type = playerType::NOPLAYER;
     resources[resourceType::BRICK] = 0;
     resources[resourceType::WOOD] = 0;
     resources[resourceType::SHEEP] = 0;

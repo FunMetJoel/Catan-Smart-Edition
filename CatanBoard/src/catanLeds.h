@@ -2,11 +2,13 @@
 #define CATANLEDS_H
 
 #include <FastLED.h>
+#include "catanState.h"
 
 // Declare any global variables or functions here
 extern CRGB playerColors[7];
 
-void setupLeds();
-void showPlayerLocations(byte player);
+void setupLeds(catanState *pstate);
+void setupPlayerLocationsLeds();
+void showPlayerLocations();
 
 #endif // CATANLEDS_H
