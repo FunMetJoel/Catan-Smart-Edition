@@ -21,7 +21,7 @@ CRGB leds[NUM_LEDS];
 catanState *statePointer;
 byte* playerLocations[NUM_LEDS];
 
-byte defaultPlayerLocation = 0;
+byte defaultPlayerLocation = 2;
 
 void setupLeds(catanState *pstate) {
     FastLED.addLeds<NEOPIXEL, LED_PIN>(leds, NUM_LEDS);
@@ -31,6 +31,10 @@ void setupLeds(catanState *pstate) {
 }
 
 void setupPlayerLocationsLeds(){
+    for (byte i = 0; i < NUM_LEDS; i++) {
+        playerLocations[i] = &defaultPlayerLocation;
+    }
+
     playerLocations[0] = &statePointer->getEdge(0,3)->player;
     playerLocations[1] = &statePointer->getCorner(0,1)->player;
     playerLocations[2] = &statePointer->getEdge(0,2)->player;
@@ -48,11 +52,33 @@ void setupPlayerLocationsLeds(){
     playerLocations[14] = &statePointer->getEdge(4,2)->player;
     playerLocations[15] = &statePointer->getCorner(5,1)->player;
     playerLocations[16] = &statePointer->getEdge(5,2)->player;
+    playerLocations[17] = &statePointer->getCorner(6,1)->player;
+    playerLocations[18] = &statePointer->getEdge(6,3)->player;
+    playerLocations[19] = &statePointer->getCorner(7,2)->player;
+    playerLocations[20] = &statePointer->getEdge(6,4)->player;
+    playerLocations[21] = &statePointer->getCorner(6,2)->player;
+    playerLocations[22] = &statePointer->getEdge(5,4)->player;
+    playerLocations[23] = &statePointer->getEdge(0,1)->player;
+    playerLocations[24] = &statePointer->getCorner(0,0)->player;
+    playerLocations[25] = &statePointer->getEdge(0,0)->player;
+    playerLocations[26] = &statePointer->getCorner(1,0)->player;
+    playerLocations[27] = &statePointer->getEdge(1,0)->player;
+    playerLocations[28] = &statePointer->getCorner(2,0)->player;
+    playerLocations[29] = &statePointer->getEdge(2,1)->player;
+    playerLocations[30] = &statePointer->getEdge(2,0)->player;
+    playerLocations[31] = &statePointer->getCorner(3,0)->player;
+    playerLocations[32] = &statePointer->getEdge(3,0)->player;
+    playerLocations[33] = &statePointer->getCorner(4,0)->player;
+    playerLocations[34] = &statePointer->getEdge(4,1)->player;
+    playerLocations[35] = &statePointer->getEdge(4,0)->player;
+    playerLocations[36] = &statePointer->getCorner(5,0)->player;
+    playerLocations[37] = &statePointer->getEdge(5,0)->player;
+    playerLocations[38] = &statePointer->getCorner(6,0)->player;
+    playerLocations[39] = &statePointer->getEdge(6,1)->player;
+    playerLocations[40] = &statePointer->getCorner(7,1)->player;
+    playerLocations[41] = &statePointer->getEdge(6,2)->player;
 
 
-    for (byte i = 16; i < NUM_LEDS; i++) {
-        playerLocations[i] = &defaultPlayerLocation;
-    }
 }
 
 void showPlayerLocations() {

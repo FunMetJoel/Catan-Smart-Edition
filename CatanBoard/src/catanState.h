@@ -20,8 +20,7 @@ class hex {
         resourceType resource;
         byte number;
         bool robber;
-    private:
-        
+    private:   
 };
 
 class edge {
@@ -63,8 +62,16 @@ class catanState {
     public:
         catanState();
         hex* getHex(byte hexX, byte hexY);
+        hex** getHexesFromCorner(byte cornerX, byte cornerY);
         corner* getCorner(byte cornerX, byte cornerY);
+        corner** getCornersFromHex(byte hexX, byte hexY);
+        corner** getSurroundingCorners(byte cornerX, byte cornerY);
         edge* getEdge(byte edgeX, byte edgeY);
+        edge** getEdgesFromCorner(byte cornerX, byte cornerY);
+
+        byte* getHexLocation(hex* hex);
+        byte* getCornerLocation(corner* corner);
+        byte* getEdgeLocation(edge* edge);
     private:
         hex hexes[19];
         corner corners[54];
