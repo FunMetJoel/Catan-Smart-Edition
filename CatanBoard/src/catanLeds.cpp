@@ -77,8 +77,52 @@ void setupPlayerLocationsLeds(){
     playerLocations[39] = &statePointer->getEdge(6,1)->player;
     playerLocations[40] = &statePointer->getCorner(7,1)->player;
     playerLocations[41] = &statePointer->getEdge(6,2)->player;
+}
 
+void CoardinatesExplination() {
+    for (byte i = 0; i < NUM_LEDS; i++) {
+        leds[i] = CRGB::Black;
+    }
 
+    // leds[1] = CRGB(23 * (0+1), 42 * (1+1), 0);
+    // leds[3] = CRGB(23 * (1+1), 42 * (1+1), 0);
+    // leds[5] = CRGB(23 * (2+1), 42 * (1+1), 0);
+    // leds[8] = CRGB(23 * (3+1), 42 * (1+1), 0);
+    // leds[10] = CRGB(23 * (4+1), 42 * (1+1), 0);
+    // leds[12] = CRGB(23 * (5+1), 42 * (2+1), 0);
+    // leds[15] = CRGB(23 * (5+1), 42 * (1+1), 0);
+    // leds[17] = CRGB(23 * (6+1), 42 * (1+1), 0);
+    // leds[19] = CRGB(23 * (7+1), 42 * (2+1), 0);
+    // leds[21] = CRGB(23 * (6+1), 42 * (2+1), 0);
+    // leds[24] = CRGB(23 * (0+1), 42 * (0+1), 0);
+    // leds[26] = CRGB(23 * (1+1), 42 * (0+1), 0);
+    // leds[28] = CRGB(23 * (2+1), 42 * (0+1), 0);
+    // leds[31] = CRGB(23 * (3+1), 42 * (0+1), 0);
+    // leds[33] = CRGB(23 * (4+1), 42 * (0+1), 0);
+    // leds[36] = CRGB(23 * (5+1), 42 * (0+1), 0);
+    // leds[38] = CRGB(23 * (6+1), 42 * (0+1), 0);
+    // leds[40] = CRGB(23 * (7+1), 42 * (1+1), 0);
+
+    leds[1] = CRGB(255, 0, 0);
+    leds[3] = CRGB(0, 255, 0);
+    leds[5] = CRGB(0, 0, 255);
+    leds[8] = CRGB(255, 255, 0);
+    leds[10] = CRGB(255, 0, 255);
+    leds[12] = CRGB(0, 255, 255);
+    leds[15] = CRGB(0, 255, 255);
+    leds[17] = CRGB(255, 255, 255);
+    leds[19] = CRGB(255, 0, 0);
+    leds[21] = CRGB(255, 255, 255);
+    leds[24] = CRGB(255, 0, 0);
+    leds[26] = CRGB(0, 255, 0);
+    leds[28] = CRGB(0, 0, 255);
+    leds[31] = CRGB(255, 255, 0);
+    leds[33] = CRGB(255, 0, 255);
+    leds[36] = CRGB(0, 255, 255);
+    leds[38] = CRGB(255, 255, 255);
+    leds[40] = CRGB(255, 0, 0);
+
+    FastLED.show();
 }
 
 void showPlayerLocations() {

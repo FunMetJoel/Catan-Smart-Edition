@@ -62,12 +62,12 @@ class catanState {
     public:
         catanState();
         hex* getHex(byte hexX, byte hexY);
-        hex** getHexesFromCorner(byte cornerX, byte cornerY);
+        hex* getHexesFromCorner(byte cornerX, byte cornerY, byte i);
         corner* getCorner(byte cornerX, byte cornerY);
-        corner** getCornersFromHex(byte hexX, byte hexY);
-        corner** getSurroundingCorners(byte cornerX, byte cornerY);
+        corner* getCornersFromHex(byte hexX, byte hexY, byte i);
+        corner* getSurroundingCorners(byte cornerX, byte cornerY, byte i);
         edge* getEdge(byte edgeX, byte edgeY);
-        edge** getEdgesFromCorner(byte cornerX, byte cornerY);
+        edge* getEdgesFromCorner(byte cornerX, byte cornerY, byte i);
 
         byte* getHexLocation(hex* hex);
         byte* getCornerLocation(corner* corner);

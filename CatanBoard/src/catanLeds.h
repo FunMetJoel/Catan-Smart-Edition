@@ -10,5 +10,6 @@ extern CRGB playerColors[7];
 void setupLeds(catanState *pstate);
 void setupPlayerLocationsLeds();
 void showPlayerLocations();
+void CoardinatesExplination();
 
 #endif // CATANLEDS_H
