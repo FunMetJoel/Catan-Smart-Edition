@@ -77,6 +77,12 @@ void setupPlayerLocationsLeds(){
     playerLocations[39] = &statePointer->getEdge(6,1)->player;
     playerLocations[40] = &statePointer->getCorner(7,1)->player;
     playerLocations[41] = &statePointer->getEdge(6,2)->player;
+    playerLocations[42] = &statePointer->getEdge(7,2)->player;
+    playerLocations[43] = &statePointer->getCorner(8,2)->player;
+    playerLocations[44] = &statePointer->getEdge(8,3)->player;
+    playerLocations[45] = &statePointer->getCorner(9,2)->player;
+    playerLocations[46] = &statePointer->getEdge(8,4)->player;
+    
 }
 
 void CoardinatesExplination() {

@@ -23,7 +23,7 @@ void setSurroundingCorners(byte cornerX, byte cornerY, byte p){
 }
 
 void loop() {
-  CoardinatesExplination();
+  showPlayerLocations();
 
   // Read serial input until a newline character is received
   if (Serial.available() > 0) {
