@@ -1,6 +1,47 @@
-class Hex extends CanvasObject {
+class backgroundWater extends CanvasObject {
     constructor(px, py, sx, sy) {
         super(px, py, sx, sy);
+    }
+
+    draw(ctx, objectCenter, objectSize) {
+        // draw images/background_map.png
+        var img = new Image();
+        img.src = "images/water.png";
+        img.onload = () => {
+            ctx.drawImage(img, objectCenter.x - objectSize.x / 2, objectCenter.y - objectSize.y / 2, objectSize.x, objectSize.y);
+            this.drawChildren(ctx, objectCenter, objectSize);
+        }
+    }
+}
+
+class backgroundMap extends CanvasObject {
+    constructor(px, py, sx, sy) {
+        super(px, py, sx, sy);
+    }
+
+    draw(ctx, objectCenter, objectSize) {
+        // draw images/background_map.png
+        var img = new Image();
+        img.src = "images/background_map.png";
+        img.onload = () => {
+            ctx.drawImage(img, objectCenter.x - objectSize.x / 2, objectCenter.y - objectSize.y / 2, objectSize.x, objectSize.y);
+            this.drawChildren(ctx, objectCenter, objectSize);
+        }
+    }
+}
+
+class Hex extends CanvasObject {
+    constructor(px, py, sx, sy, hexX, hexY) {
+        super(px, py, sx, sy);
+        this.hexCoords = {x: hexX, y: hexY};
+        this.addChild(
+            new TextObject(
+                0, 0, 
+                0.866, 0.15, 
+                hexX + ", " + hexY, 
+                "Arial", "#000000"
+            )
+        );
     }
 
     draw(ctx, objectCenter, objectSize) {
@@ -17,6 +58,7 @@ class Hex extends CanvasObject {
 class Corner extends CanvasObject {
     constructor(px, py, sx, sy) {
         super(px, py, sx, sy);
+        this.player = null;
     }
 
     draw(ctx, objectCenter, objectSize) {
@@ -26,8 +68,10 @@ class Corner extends CanvasObject {
         // ctx.fill();
         var img = new Image();
         img.src = "images/settlement_silver.svg";
+
         img.onload = () => {
             ctx.drawImage(img, objectCenter.x - objectSize.x / 2, objectCenter.y - objectSize.y / 2, objectSize.x, objectSize.y);
+            
             this.drawChildren(ctx, objectCenter, objectSize);
         }
     }
@@ -41,7 +85,7 @@ class Road extends CanvasObject {
 
     draw(ctx, objectCenter, objectSize) {
         var img = new Image();
-        img.src = "images/road_red.svg";
+        img.src = "images/road_silver.svg";
         img.onload = () => {
 
             // rotate the image
@@ -65,29 +109,10 @@ class CatanWebClient extends ObjectCanvas {
     }
 
     setupBoard() {
-        // Blue background
-        this.ctx.fillStyle = "#00AAFF";
-        this.ctx.fillRect(0, 0, 800, 800);
-
-        this.ctx.fillStyle = "#000000";
-        
-        for(var x = 0; x < 100; x++) {
-            for(var y = 0; y < 100; y++) {
-                var screenCords = {x: x * 8, y: y * 8};
-                this.ctx.fillRect(screenCords.x, screenCords.y, 1, 1);
-            }
-        }
-
-        // var parentSquare = new Square(0, 0, 0.01, 1, "#00FF00");
-        // this.addObject(parentSquare);
-
-        // var colors = ["#FF0000", "#0000FF", "#FFFF00", "#00FFFF", "#FF00FF", "#00FF00"];
-        
-        // for (var i = 0; i < 60; i++) {
-        //     var childSquare = new Square(0, 0, 0.9, 0.9, colors[i%6]);
-        //     parentSquare.addChild(childSquare);
-        //     parentSquare = childSquare;
-        // }
+        var background = new backgroundWater(0, 0, 1, 1);
+        this.addObject(background);
+        var map = new backgroundMap(0, 0, 1, 1);
+        background.addChild(map);
 
         var roadSize = 0.02;
         var hexSize = 0.175;
@@ -104,10 +129,8 @@ class CatanWebClient extends ObjectCanvas {
                 }
                 var HexX = 0.866 * (hexSize + roadSize) * (i-1) - 0.433 * (hexSize + roadSize) * j;
                 var HexY = 0.75 * (hexSize + roadSize) * (j-2);
-                var hex = new Hex(HexX, HexY, hexSize, hexSize);
-                this.addObject(hex);
-                var textObject = new TextObject(0, 0, 0.866, 0.15, i + ", " + j, "Arial", "#000000");
-                hex.addChild(textObject);
+                var hex = new Hex(HexX, HexY, hexSize, hexSize, i, j);
+                map.addChild(hex);
             }
         }
 
@@ -128,7 +151,7 @@ class CatanWebClient extends ObjectCanvas {
                 var cornerX = 0.433 * (hexSize + roadSize) * (i) - 0.433 * (hexSize + roadSize) * j - 0.866 * (hexSize + roadSize) * 1.5;
                 var cornerY = 0.75 * (hexSize + roadSize) * (j) - 0.25 * (hexSize + roadSize) * (i%2) - 0.75 * (hexSize + roadSize) * 2.34;
                 var corner = new Corner(cornerX, cornerY, 3*roadSize, 3*roadSize);
-                this.addObject(corner);
+                map.addChild(corner);
                 // var dot = new Square(0, 0, 0.1, 0.1, "#FF0000");
                 // corner.addChild(dot);
             }
@@ -164,7 +187,7 @@ class CatanWebClient extends ObjectCanvas {
                     rotation = 1.04719755
                 }
                 var road = new Road(roadX, roadY, 3*roadSize, 2.4*roadSize, rotation);
-                this.addObject(road);
+                map.addChild(road);
             }
         }
 

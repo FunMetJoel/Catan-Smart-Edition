@@ -4,6 +4,15 @@ class ObjectCanvas {
         this.size = {x: ctx.canvas.width * scale.x, y: ctx.canvas.height * scale.y};
         this.center = {x: this.size.x / 2, y: this.size.y / 2};
         this.objects = [];
+        
+        ctx.canvas.addEventListener('click', (event) => {
+            var rect = ctx.canvas.getBoundingClientRect();
+            var clickPos = {
+                x: event.clientX - rect.left,
+                y: event.clientY - rect.top
+            };
+            this.detectClick(clickPos);
+        });
     }
 
     addObject(obj) {
@@ -13,6 +22,12 @@ class ObjectCanvas {
     draw() {
         for(var i = 0; i < this.objects.length; i++) {
             this.objects[i].drawObject(this.ctx, this.center, this.size);
+        }
+    }
+
+    detectClick(clickPos) {
+        for(var i = 0; i < this.objects.length; i++) {
+            this.objects[i].detectClickObject(clickPos, this.center, this.size);
         }
     }
 }
@@ -43,6 +58,27 @@ class CanvasObject {
         for (var i = 0; i < this.children.length; i++) {
             this.children[i].drawObject(ctx, center, size);
         }
+    }
+
+    detectClickObject(clickPos, center, size) {
+        var objectCenter = {x: center.x + this.pos.x * size.x, y: center.y - this.pos.y * size.y};
+        var objectSize = {x: this.scale.x * size.x, y: this.scale.y * size.y};
+
+        if (this.inClickBounds(clickPos, objectCenter, objectSize)) {
+            this.onClick();
+        }
+
+        for (var i = 0; i < this.children.length; i++) {
+            this.children[i].detectClickObject(clickPos, objectCenter, objectSize);
+        }
+    }
+
+    inClickBounds(clickPos, objectCenter, objectSize) {
+        return false;
+    }
+
+    onClick() {
+        // On click
     }
 }
 

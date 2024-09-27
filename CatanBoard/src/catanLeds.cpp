@@ -13,7 +13,7 @@ CRGB playerColors[7] = {
     CRGB::Brown
 };
 
-#define NUM_LEDS 100
+#define NUM_LEDS 200
 #define LED_PIN 6
 
 CRGB leds[NUM_LEDS];
