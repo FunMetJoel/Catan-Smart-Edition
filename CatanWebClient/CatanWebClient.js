@@ -1,32 +1,28 @@
 class backgroundWater extends CanvasObject {
     constructor(px, py, sx, sy) {
         super(px, py, sx, sy);
+
+        // preload image
+        this.image = new Image();
+        this.image.src = "images/water.png";
     }
 
     draw(ctx, objectCenter, objectSize) {
-        // draw images/background_map.png
-        var img = new Image();
-        img.src = "images/water.png";
-        img.onload = () => {
-            ctx.drawImage(img, objectCenter.x - objectSize.x / 2, objectCenter.y - objectSize.y / 2, objectSize.x, objectSize.y);
-            this.drawChildren(ctx, objectCenter, objectSize);
-        }
+        ctx.drawImage(this.image, objectCenter.x - objectSize.x / 2, objectCenter.y - objectSize.y / 2, objectSize.x, objectSize.y);
     }
 }
 
 class backgroundMap extends CanvasObject {
     constructor(px, py, sx, sy) {
         super(px, py, sx, sy);
+
+        // preload image
+        this.image = new Image();
+        this.image.src = "images/background_map.png";
     }
 
     draw(ctx, objectCenter, objectSize) {
-        // draw images/background_map.png
-        var img = new Image();
-        img.src = "images/background_map.png";
-        img.onload = () => {
-            ctx.drawImage(img, objectCenter.x - objectSize.x / 2, objectCenter.y - objectSize.y / 2, objectSize.x, objectSize.y);
-            this.drawChildren(ctx, objectCenter, objectSize);
-        }
+        ctx.drawImage(this.image, objectCenter.x - objectSize.x / 2, objectCenter.y - objectSize.y / 2, objectSize.x, objectSize.y);
     }
 }
 
@@ -42,62 +38,89 @@ class Hex extends CanvasObject {
                 "Arial", "#000000"
             )
         );
+
+        this.image = new Image();
+        this.image.src = "images/bos.png";
     }
 
     draw(ctx, objectCenter, objectSize) {
-        // draw images/bos.png
-        var img = new Image();
-        img.src = "images/bos.png";
-        img.onload = () => {
-            ctx.drawImage(img, objectCenter.x - objectSize.x / 2, objectCenter.y - objectSize.y / 2, objectSize.x, objectSize.y);
-            this.drawChildren(ctx, objectCenter, objectSize);
-        }
+        ctx.drawImage(this.image, objectCenter.x - objectSize.x / 2, objectCenter.y - objectSize.y / 2, objectSize.x, objectSize.y);
     }
 }
 
 class Corner extends CanvasObject {
     constructor(px, py, sx, sy) {
         super(px, py, sx, sy);
-        this.player = null;
+        this.player = 0;
+
+        const imageUrls = [null, "images/settlement_red.svg", "images/settlement_blue.svg", "images/settlement_green.svg", "images/settlement_yellow.svg"];
+        this.images = [null]
+        for (var i = 1; i < imageUrls.length; i++) {
+            var image = new Image();
+            image.src = imageUrls[i];
+            this.images.push(image);
+        }
     }
 
     draw(ctx, objectCenter, objectSize) {
-        ctx.fillStyle = this.color;
-        // ctx.beginPath();
-        // ctx.arc(objectCenter.x, objectCenter.y, objectSize.x / 2, 0, 2 * Math.PI);
-        // ctx.fill();
-        var img = new Image();
-        img.src = "images/settlement_silver.svg";
-
-        img.onload = () => {
-            ctx.drawImage(img, objectCenter.x - objectSize.x / 2, objectCenter.y - objectSize.y / 2, objectSize.x, objectSize.y);
-            
+        
+        if (this.player == 0) {
+            ctx.fillStyle = "#000000";
+            ctx.beginPath();
+            ctx.arc(objectCenter.x, objectCenter.y, objectSize.x / 6, 0, 2 * Math.PI);
+            ctx.fill();
             this.drawChildren(ctx, objectCenter, objectSize);
+        }else {
+            ctx.drawImage(this.images[this.player], objectCenter.x - objectSize.x / 2, objectCenter.y - objectSize.y / 2, objectSize.x, objectSize.y);
         }
+    }
+
+    inClickBounds(clickPos, objectCenter, objectSize) {
+        return Math.sqrt((clickPos.x - objectCenter.x) ** 2 + (clickPos.y - objectCenter.y) ** 2) < objectSize.x / 3;
+    }
+
+    onClick() {
+        this.player = (this.player + 1) % 5;
     }
 }
 
 class Road extends CanvasObject {
     constructor(px, py, sx, sy, rotation = 0 ) {
         super(px, py, sx, sy);
+        this.player = 0;
         this.rotation = rotation;
+        const imageUrls = [null, "images/road_red.svg", "images/road_blue.svg", "images/road_green.svg", "images/road_yellow.svg"];
+        this.images = [null]
+        for (var i = 1; i < imageUrls.length; i++) {
+            var image = new Image();
+            image.src = imageUrls[i];
+            this.images.push(image);
+        }
     }
 
     draw(ctx, objectCenter, objectSize) {
-        var img = new Image();
-        img.src = "images/road_silver.svg";
-        img.onload = () => {
-
-            // rotate the image
+        if (this.player == 0) {
+            ctx.fillStyle = "#000000";
+            ctx.beginPath();
+            ctx.arc(objectCenter.x, objectCenter.y, objectSize.x / 6, 0, 2 * Math.PI);
+            ctx.fill();
+            this.drawChildren(ctx, objectCenter, objectSize);
+        }else {
             ctx.save();
             ctx.translate(objectCenter.x, objectCenter.y);
             ctx.rotate(this.rotation);
             ctx.translate(-objectCenter.x, -objectCenter.y);
-            ctx.drawImage(img, objectCenter.x - objectSize.x / 2, objectCenter.y - objectSize.y / 2, objectSize.x, objectSize.y);
+            ctx.drawImage(this.images[this.player], objectCenter.x - objectSize.x / 2, objectCenter.y - objectSize.y / 2, objectSize.x, objectSize.y);
             ctx.restore();
-
-            this.drawChildren(ctx, objectCenter, objectSize);
         }
+    }
+
+    inClickBounds(clickPos, objectCenter, objectSize) {
+        return Math.sqrt((clickPos.x - objectCenter.x) ** 2 + (clickPos.y - objectCenter.y) ** 2) < objectSize.x / 3;
+    }
+
+    onClick() {
+        this.player = (this.player + 1) % 5;
     }
 }
 
@@ -190,9 +213,6 @@ class CatanWebClient extends ObjectCanvas {
                 map.addChild(road);
             }
         }
-
-        this.draw();
-
     }
 
 }

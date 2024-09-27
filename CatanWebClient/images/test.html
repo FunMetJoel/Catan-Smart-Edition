@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas Game</title>
+    <style>
+        canvas {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Create an offscreen canvas
+        const offscreenCanvas = document.createElement('canvas');
+        offscreenCanvas.width = canvas.width;
+        offscreenCanvas.height = canvas.height;
+        const offscreenCtx = offscreenCanvas.getContext('2d');
+
+        function gameLoop() {
+            // Clear the offscreen canvas
+            offscreenCtx.clearRect(0, 0, offscreenCanvas.width, offscreenCanvas.height);
+
+            // Draw your game frame on the offscreen canvas
+            draw(offscreenCtx);
+
+            // Copy the offscreen canvas to the onscreen canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Optional: Clear the visible canvas
+            ctx.drawImage(offscreenCanvas, 0, 0);
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        function draw(ctx) {
+            // Example drawing code
+            ctx.fillStyle = 'blue';
+            ctx.fillRect(50, 50, 100, 100);
+
+            ctx.fillStyle = 'red';
+            ctx.fillRect(200, 200, 100, 100);
+
+            // Additional drawing code goes here
+        }
+
+        gameLoop(); // Start the game loop
+    </script>
+</body>
+</html>

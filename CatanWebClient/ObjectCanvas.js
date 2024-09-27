@@ -4,6 +4,11 @@ class ObjectCanvas {
         this.size = {x: ctx.canvas.width * scale.x, y: ctx.canvas.height * scale.y};
         this.center = {x: this.size.x / 2, y: this.size.y / 2};
         this.objects = [];
+
+        this.offscreenCanvas = document.createElement('canvas');
+        this.offscreenCanvas.width = this.size.x;
+        this.offscreenCanvas.height = this.size.y;
+        this.offscreenCtx = this.offscreenCanvas.getContext('2d');
         
         ctx.canvas.addEventListener('click', (event) => {
             var rect = ctx.canvas.getBoundingClientRect();
@@ -13,15 +18,26 @@ class ObjectCanvas {
             };
             this.detectClick(clickPos);
         });
+        
+        this.drawLoop();
     }
 
     addObject(obj) {
         this.objects.push(obj);
     }
 
-    draw() {
+    drawLoop() {
+        this.offscreenCtx.clearRect(0, 0, this.size.x, this.size.y);
+        this.draw(this.offscreenCtx);
+        this.ctx.clearRect(0, 0, this.size.x, this.size.y);
+        this.ctx.drawImage(this.offscreenCanvas, 0, 0);
+    
+        requestAnimationFrame(() => this.drawLoop());
+    }
+
+    draw(ctx) {
         for(var i = 0; i < this.objects.length; i++) {
-            this.objects[i].drawObject(this.ctx, this.center, this.size);
+            this.objects[i].drawObject(ctx, this.center, this.size);
         }
     }
 
@@ -52,13 +68,15 @@ class CanvasObject {
         var objectSize = {x: this.scale.x * size.x, y: this.scale.y * size.y};
 
         this.draw(ctx, objectCenter, objectSize);
+
+        this.drawChildren(ctx, objectCenter, objectSize);
     }
 
     drawChildren(ctx, center, size) {
         for (var i = 0; i < this.children.length; i++) {
             this.children[i].drawObject(ctx, center, size);
         }
-    }
+    } 
 
     detectClickObject(clickPos, center, size) {
         var objectCenter = {x: center.x + this.pos.x * size.x, y: center.y - this.pos.y * size.y};
@@ -91,7 +109,6 @@ class Square extends CanvasObject {
     draw(ctx, objectCenter, objectSize) {
         ctx.fillStyle = this.color;
         ctx.fillRect(objectCenter.x - objectSize.x / 2, objectCenter.y - objectSize.y / 2, objectSize.x, objectSize.y);
-        this.drawChildren(ctx, objectCenter, objectSize);
     }
 }
 
@@ -109,6 +126,5 @@ class TextObject extends CanvasObject {
         var textWidth = ctx.measureText(this.text).width;
         textWidth = textWidth > objectSize.x ? objectSize.x : textWidth;
         ctx.fillText(this.text, objectCenter.x - textWidth / 2, objectCenter.y + objectSize.y / 2, objectSize.x);
-        this.drawChildren(ctx, objectCenter, objectSize);
     }
 }
