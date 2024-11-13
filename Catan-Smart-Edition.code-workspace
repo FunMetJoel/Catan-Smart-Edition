@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"name": "CatanBoard",
+			"path": "CatanBoard"
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "Catan-Smart-Edition"
+	}
+}

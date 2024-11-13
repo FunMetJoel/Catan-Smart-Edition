@@ -41,10 +41,25 @@ class Hex extends CanvasObject {
 
         this.image = new Image();
         this.image.src = "images/bos.png";
+
+        this.overlayImage = new Image();
+        this.overlayImage.src = "images/rollOverlay.png";
+
+        this.selected = false;
     }
 
     draw(ctx, objectCenter, objectSize) {
         ctx.drawImage(this.image, objectCenter.x - objectSize.x / 2, objectCenter.y - objectSize.y / 2, objectSize.x, objectSize.y);
+        if (this.selected) {
+            ctx.drawImage(this.overlayImage, objectCenter.x - objectSize.x / 2, objectCenter.y - objectSize.y / 2, objectSize.x, objectSize.y);
+        }
+    }
+
+    playSelectAnimation() {
+        this.selected = true;
+        setTimeout(() => {
+            this.selected = false;
+        }, 250);
     }
 }
 
@@ -102,7 +117,7 @@ class Road extends CanvasObject {
         if (this.player == 0) {
             ctx.fillStyle = "#000000";
             ctx.beginPath();
-            ctx.arc(objectCenter.x, objectCenter.y, objectSize.x / 6, 0, 2 * Math.PI);
+            ctx.arc(objectCenter.x, objectCenter.y, objectSize.x / 10, 0, 2 * Math.PI);
             ctx.fill();
             this.drawChildren(ctx, objectCenter, objectSize);
         }else {
