@@ -20,7 +20,10 @@ def get_players():
 # Get tile at x, y
 @app.route("/getTile/<int:x>/<int:y>", methods=['GET'])
 def get_tile(x, y):
-    tile = catanGame.tile(x, y)
+    tile = catanGame.board.hex(x, y)
+    dict = tile.to_dict()
+    print(dict)
+    print(type(dict))
     return flask.jsonify(tile.to_dict())
 
 

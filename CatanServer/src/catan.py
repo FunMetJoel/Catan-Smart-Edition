@@ -1,5 +1,5 @@
-import enum
 from __future__ import annotations
+import enum
 
 class CatanState:
     def __init__(self, board:CatanBoard, players:list[CatanPlayer], current_player_id:int):
@@ -61,7 +61,7 @@ class CatanBoard:
         return
 
 
-class CatanResource(enum.Enum, int):
+class CatanResource(enum.IntEnum):
     WOOD = 1
     BRICK = 2
     SHEEP = 3
