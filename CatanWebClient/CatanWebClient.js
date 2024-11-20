@@ -30,26 +30,29 @@ class Hex extends CanvasObject {
     constructor(px, py, sx, sy, hexX, hexY) {
         super(px, py, sx, sy);
         this.hexCoords = {x: hexX, y: hexY};
+        this.text = new TextObject(0, 0, 0.866, 0.15, hexX + ", " + hexY, "Arial", "#000000");
         this.addChild(
-            new TextObject(
-                0, 0, 
-                0.866, 0.15, 
-                hexX + ", " + hexY, 
-                "Arial", "#000000"
-            )
+            this.text
         );
 
-        this.image = new Image();
-        this.image.src = "images/bos.png";
+        const imageUrls = [null, "images/bos.png", "images/brick.png", "images/shcaap.png", "images/graan.png", "images/steen.png"];
+        this.images = [null]
+        for (var i = 1; i < imageUrls.length; i++) {
+            var image = new Image();
+            image.src = imageUrls[i];
+            this.images.push(image);
+        }
+        console.log(this.images);
 
         this.overlayImage = new Image();
         this.overlayImage.src = "images/rollOverlay.png";
 
         this.selected = false;
+        this.recource = 1;
     }
 
     draw(ctx, objectCenter, objectSize) {
-        ctx.drawImage(this.image, objectCenter.x - objectSize.x / 2, objectCenter.y - objectSize.y / 2, objectSize.x, objectSize.y);
+        ctx.drawImage(this.images[this.recource], objectCenter.x - objectSize.x / 2, objectCenter.y - objectSize.y / 2, objectSize.x, objectSize.y);
         if (this.selected) {
             ctx.drawImage(this.overlayImage, objectCenter.x - objectSize.x / 2, objectCenter.y - objectSize.y / 2, objectSize.x, objectSize.y);
         }
@@ -60,6 +63,16 @@ class Hex extends CanvasObject {
         setTimeout(() => {
             this.selected = false;
         }, 250);
+    }
+
+    update() {
+        getTileData(this.hexCoords.x, this.hexCoords.y)
+        .then(data => {
+            this.text.text = data.number;
+            this.recource = data.tile_type;
+        });
+
+
     }
 }
 
