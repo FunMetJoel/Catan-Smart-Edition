@@ -1,5 +1,6 @@
 from __future__ import annotations
 import enum
+import random
 
 class CatanState:
     def __init__(self, board:CatanBoard, players:list[CatanPlayer], current_player_id:int):
@@ -25,7 +26,7 @@ class CatanBoard:
     def __init__(self):
         self.tiles = [CatanTile for i in range(19)]
         for i in range(19):
-            resourceType = CatanResource(i % 5 + 1)
+            resourceType = random.choice([CatanResource.WOOD, CatanResource.BRICK, CatanResource.SHEEP, CatanResource.WHEAT, CatanResource.ORE])
             self.tiles[i] = CatanTile(resourceType, i % 11 + 2)
 
     def hex(self, x, y) -> CatanTile:

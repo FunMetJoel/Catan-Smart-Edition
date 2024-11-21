@@ -46,6 +46,12 @@ class ObjectCanvas {
             this.objects[i].detectClickObject(clickPos, this.center, this.size);
         }
     }
+
+    update() {
+        for(var i = 0; i < this.objects.length; i++) {
+            this.objects[i].updateObject();
+        }
+    }
 }
 
 class CanvasObject {
@@ -97,6 +103,18 @@ class CanvasObject {
 
     onClick() {
         // On click
+    }
+
+    update() {
+        // Update
+    }
+
+    updateObject() {
+        this.update();
+
+        for (var i = 0; i < this.children.length; i++) {
+            this.children[i].updateObject();
+        }
     }
 }
 
