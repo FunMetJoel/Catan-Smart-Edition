@@ -131,6 +131,38 @@ void CoardinatesExplination() {
     FastLED.show();
 }
 
+vectors!!
+
+0,1,2
+//list heet update
+int x = 1
+x + 2
+int y = 0
+y + 2
+int locationlist = update[x] 
+if locationlist = 0 :
+if locationlist = 1 :
+if locationlist = 2 :
+if locationlist = 3 :
+if locationlist = 4 :
+
+if b = 0
+if b = 1
+if b = 2
+
+led[x] 
+
+int rednumber;
+//72[0,1,2,0,0,1]
+leds[/*list red*/] = CRGB::Red; //straat en gebouw
+leds[/*list blue*/] = CRGB::Blue;
+leds[/*list yellow*/] = CRGB::Yellow;// stad
+leds[/*list green*/] = CRGB::Green;
+
+
+
+
+
 void showPlayerLocations() {
     for (int i = 0; i < NUM_LEDS; i++) {
         leds[i] = playerColors[*playerLocations[i]];
