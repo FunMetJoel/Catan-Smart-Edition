@@ -131,36 +131,35 @@ void CoardinatesExplination() {
     FastLED.show();
 }
 
-vectors!!
-
-0,1,2
-//list heet update
-int x = 1
-x + 2
-int y = 0
-y + 2
-int locationlist = update[x] 
-if locationlist = 0 :
-if locationlist = 1 :
-if locationlist = 2 :
-if locationlist = 3 :
-if locationlist = 4 :
-
-if b = 0
-if b = 1
-if b = 2
-
-led[x] 
-
-int rednumber;
-//72[0,1,2,0,0,1]
-leds[/*list red*/] = CRGB::Red; //straat en gebouw
-leds[/*list blue*/] = CRGB::Blue;
-leds[/*list yellow*/] = CRGB::Yellow;// stad
-leds[/*list green*/] = CRGB::Green;
+//vectors!!  1 ,2 ,0 ,1
+ledlighter::ledlighter(){ 
+    for (int i = 0; i < 72; i++) {
 
 
+        int locationcoulor() = update[i * 2] {
+            if locationlist = 0{
+                leds[i] = CRGB::Red;
+            }
+            if a = 1;
+            if a = 2;
+            if a = 3;
+            if a = 4;
+        }
 
+        int locationbuilding() = update[i * 2 + 1] {
+            if b = 0 ;
+            if b = 1 ;
+            if b = 2 ;
+        }
+    }
+}
+
+// int rednumber;
+// //72[0,1,2,0,0,1]
+// leds[/*list red*/] = CRGB::Red; //straat en gebouw
+// leds[/*list blue*/] = CRGB::Blue;
+// leds[/*list yellow*/] = CRGB::Yellow;// stad
+// leds[/*list green*/] = CRGB::Green;
 
 
 void showPlayerLocations() {
@@ -169,3 +168,23 @@ void showPlayerLocations() {
     }
     FastLED.show();
 }
+
+void getroaddata(){
+
+
+
+}
+void gethousedata(){
+    for (int i = 0; i < 72; i++){
+        catanState.corners[i].player = housedata[i * 2];
+        catanState.corners[i].level; = housedata[i * 2 + 1];
+    }
+}
+void gethexdata(){
+    for (int i = 0; i < 72; i++){
+        hex x = i * 2
+    }
+    
+
+}
+
