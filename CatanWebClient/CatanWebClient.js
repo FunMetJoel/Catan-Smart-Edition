@@ -155,8 +155,10 @@ class Road extends CanvasObject {
 class CatanWebClient extends ObjectCanvas {
     constructor(ctx) {
         super(ctx);
-        this.setupBoard();
         this.hexes = [];
+        this.corners = [];
+        this.roads = [];
+        this.setupBoard();
     }
 
     setupBoard() {
@@ -181,6 +183,7 @@ class CatanWebClient extends ObjectCanvas {
                 var HexX = 0.866 * (hexSize + roadSize) * (i-1) - 0.433 * (hexSize + roadSize) * j;
                 var HexY = 0.75 * (hexSize + roadSize) * (j-2);
                 var hex = new Hex(HexX, HexY, hexSize, hexSize, i, j);
+                this.hexes.push(hex);
                 map.addChild(hex);
             }
         }
@@ -238,6 +241,7 @@ class CatanWebClient extends ObjectCanvas {
                     rotation = 1.04719755
                 }
                 var road = new Road(roadX, roadY, 3*roadSize, 2.4*roadSize, rotation);
+                this.roads.push(road);
                 map.addChild(road);
             }
         }
