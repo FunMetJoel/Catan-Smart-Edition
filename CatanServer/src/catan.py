@@ -28,6 +28,7 @@ class CatanBoard:
         for i in range(19):
             resourceType = random.choice([CatanResource.WOOD, CatanResource.BRICK, CatanResource.SHEEP, CatanResource.WHEAT, CatanResource.ORE])
             self.tiles[i] = CatanTile(resourceType, i % 11 + 2)
+        self.roads = [CatanRoad(0) for i in range(72)]
 
     def hex(self, x, y) -> CatanTile:
         # self.tiles is a list of CatanTile objects with length 19
