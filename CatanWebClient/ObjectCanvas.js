@@ -48,10 +48,17 @@ class ObjectCanvas {
     }
 
     update() {
-        for(var i = 0; i < this.objects.length; i++) {
+        // Update
+    }
+
+    updateObject() {
+        this.update();
+
+        for (var i = 0; i < this.objects.length; i++) {
             this.objects[i].updateObject();
         }
     }
+
 }
 
 class CanvasObject {

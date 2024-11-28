@@ -71,8 +71,6 @@ class Hex extends CanvasObject {
             this.text.text = data.number;
             this.recource = data.tile_type;
         });
-
-
     }
 }
 
@@ -113,9 +111,11 @@ class Corner extends CanvasObject {
 }
 
 class Road extends CanvasObject {
-    constructor(px, py, sx, sy, rotation = 0 ) {
+    constructor(px, py, sx, sy, roadX, roadY, rotation = 0) {
         super(px, py, sx, sy);
         this.player = 0;
+        this.roadX = roadX;
+        this.roadY = roadY;
         this.rotation = rotation;
         const imageUrls = [null, "images/road_red.svg", "images/road_blue.svg", "images/road_green.svg", "images/road_yellow.svg"];
         this.images = [null]
@@ -148,7 +148,12 @@ class Road extends CanvasObject {
     }
 
     onClick() {
-        this.player = (this.player + 1) % 5;
+        //this.player = (this.player + 1) % 5;
+        setRoad(this.roadX, this.roadY, (this.player + 1) % 5)
+        .then(data => {
+            game.updateObject()
+        }
+        )
     }
 }
 
@@ -211,8 +216,8 @@ class CatanWebClient extends ObjectCanvas {
             }
         }
 
-        for (var i = 0; i < 11; i++) {
-            for (var j = 0; j < 11; j++) {
+        for (var j = 0; j < 11; j++) {
+            for (var i = 0; i < 11; i++) {
 
                 if (
                     (j%2 == 1 && i % 2 == 1) ||
@@ -240,12 +245,20 @@ class CatanWebClient extends ObjectCanvas {
                 }else if (j%2 == 0 && i % 2 == 1) {
                     rotation = 1.04719755
                 }
-                var road = new Road(roadX, roadY, 3*roadSize, 2.4*roadSize, rotation);
+                var road = new Road(roadX, roadY, 3*roadSize, 2.4*roadSize, i, j, rotation);
                 this.roads.push(road);
                 map.addChild(road);
             }
         }
     }
 
+    update() {
+        getRoadsData()
+        .then(data => {
+            for (var i = 0; i < this.roads.length; i++) {
+                this.roads[i].player = data[i];
+            }
+        });
+    }
 }
 
