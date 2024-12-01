@@ -75,9 +75,11 @@ class Hex extends CanvasObject {
 }
 
 class Corner extends CanvasObject {
-    constructor(px, py, sx, sy) {
+    constructor(px, py, sx, sy, cornerX, cornerY) {
         super(px, py, sx, sy);
         this.player = 0;
+        this.cornerX = cornerX;
+        this.cornerY = cornerY;
 
         const imageUrls = [null, "images/settlement_red.svg", "images/settlement_blue.svg", "images/settlement_green.svg", "images/settlement_yellow.svg"];
         this.images = [null]
@@ -89,6 +91,12 @@ class Corner extends CanvasObject {
     }
 
     draw(ctx, objectCenter, objectSize) {
+        if (this.available) {
+            ctx.fillStyle = "#00FF00";
+            ctx.beginPath();
+            ctx.arc(objectCenter.x, objectCenter.y, objectSize.x / 3, 0, 2 * Math.PI);
+            ctx.fill();
+        }
         
         if (this.player == 0) {
             ctx.fillStyle = "#000000";
@@ -106,7 +114,11 @@ class Corner extends CanvasObject {
     }
 
     onClick() {
-        this.player = (this.player + 1) % 5;
+        setSettlement(this.cornerX, this.cornerY, game.player)
+        .then(data => {
+            game.updateObject()
+        }
+        )
     }
 }
 
@@ -155,7 +167,7 @@ class Road extends CanvasObject {
 
     onClick() {
         //this.player = (this.player + 1) % 5;
-        setRoad(this.roadX, this.roadY, (this.player + 1) % 5)
+        setRoad(this.roadX, this.roadY, game.player)
         .then(data => {
             game.updateObject()
         }
@@ -170,6 +182,7 @@ class CatanWebClient extends ObjectCanvas {
         this.corners = [];
         this.roads = [];
         this.setupBoard();
+        this.player = 1;
     }
 
     setupBoard() {
@@ -199,8 +212,8 @@ class CatanWebClient extends ObjectCanvas {
             }
         }
 
-        for (var i = 0; i < 12; i++) {
-            for (var j = 0; j < 6; j++) {
+        for (var j = 0; j < 6; j++) {
+            for (var i = 0; i < 12; i++) {
 
                 if (
                     (j == 0 && i >= 7) ||
@@ -215,7 +228,8 @@ class CatanWebClient extends ObjectCanvas {
                 
                 var cornerX = 0.433 * (hexSize + roadSize) * (i) - 0.433 * (hexSize + roadSize) * j - 0.866 * (hexSize + roadSize) * 1.5;
                 var cornerY = 0.75 * (hexSize + roadSize) * (j) - 0.25 * (hexSize + roadSize) * (i%2) - 0.75 * (hexSize + roadSize) * 2.34;
-                var corner = new Corner(cornerX, cornerY, 3*roadSize, 3*roadSize);
+                var corner = new Corner(cornerX, cornerY, 3*roadSize, 3*roadSize, i, j);
+                this.corners.push(corner);
                 map.addChild(corner);
                 // var dot = new Square(0, 0, 0.1, 0.1, "#FF0000");
                 // corner.addChild(dot);
@@ -266,13 +280,33 @@ class CatanWebClient extends ObjectCanvas {
             }
         });
 
-        getRoadAvailability(1)
+        getRoadAvailability(this.player)
         .then(data => {
             for (var i = 0; i < this.roads.length; i++) {
                 if (data[i] == 1) {
                     this.roads[i].available = true;
                 }else {
                     this.roads[i].available = false;
+                }
+            }
+        });
+
+        getSettlementData()
+        .then(data => {
+            console.log(data);
+            for (var i = 0; i < this.corners.length; i++) {
+                this.corners[i].player = data[i];
+                console.log(data[i]);
+            }
+        });
+
+        getSettlementAvailability(this.player)
+        .then(data => {
+            for (var i = 0; i < this.corners.length; i++) {
+                if (data[i] == 1) {
+                    this.corners[i].available = true;
+                }else {
+                    this.corners[i].available = false;
                 }
             }
         });

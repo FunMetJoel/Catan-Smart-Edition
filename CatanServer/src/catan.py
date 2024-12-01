@@ -5,6 +5,7 @@ from enums import Resource
 from cordinatesystem import HexCoordinate, CornerCoordinate
 import random
 import sys
+import time
 
 class CatanState:
     def __init__(self, board:CatanBoard, players:list[CatanPlayer], current_player_id:int):
@@ -51,6 +52,38 @@ class CatanState:
                 else:
                     roadAvailability.append(0)
         return roadAvailability
+    
+    def getSettlementAvailabilty(self, player_id:int=None) -> list[bool]:
+        settlementAvailability = []
+        if player_id == None:
+            player_id = self.current_player
+        for i in range(54):
+            if self.board.settlements[i].player != 0:
+                settlementAvailability.append(False)
+                continue
+
+            neighbors = enums.CornerCords[i].neighbors()
+            for neighbor in neighbors:
+                neighborSettlement = self.board.settlement(neighbor.x, neighbor.y)
+                if neighborSettlement == None:
+                    continue
+                
+                if neighborSettlement.player != 0:
+                    settlementAvailability.append(0)
+                    break
+            else:
+                neighborroads = enums.CornerCords[i].roads()
+                for road in neighborroads:
+                    neighborRoad = self.board.road(road.x, road.y)
+                    if neighborRoad == None:
+                        continue
+                    
+                    if neighborRoad.player == player_id:
+                        settlementAvailability.append(1)
+                        break
+                else:
+                    settlementAvailability.append(0)
+        return settlementAvailability
 
     
 class CatanBoard:

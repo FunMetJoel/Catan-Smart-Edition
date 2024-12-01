@@ -113,6 +113,33 @@ class CornerCoordinate:
             ]
         return cordinates
     
+    def roads(self):
+        """
+        Returns a list of road coordinates.
+        """
+
+        # (1,1) -> (0,1) (0,2) (1,2)
+        # (3,1) -> (2,1) (2,2) (3,2)
+        # (3,2) -> (2,3) (2,4) (3,4)
+
+        # (2,1) -> (1,2) (2,2) (2,3)
+        # (4,2) -> (3,4) (4,4) (4,5)
+        # (8,2) -> (7,4) (8,4) (8,5)
+
+        if self.x % 2 == 0:
+            cordinates = [
+                EdgeCoordinate(self.x-1, self.y*2),
+                EdgeCoordinate(self.x, self.y*2),
+                EdgeCoordinate(self.x, self.y*2+1)
+            ]
+        else:
+            cordinates = [
+                EdgeCoordinate(self.x-1, self.y*2-1),
+                EdgeCoordinate(self.x-1, self.y*2),
+                EdgeCoordinate(self.x, self.y*2)
+            ]
+        return cordinates
+    
 class EdgeCoordinate:
     """
     Coordinate system for edges of hex tiles.
@@ -189,11 +216,6 @@ class EdgeCoordinate:
         """
         Returns a list of corner coordinates.
         """
-        # (0,0) -> (0,0), (1,0)
-        # (1,0) -> (1,0), (2,0)
-        # (2,0) -> (2,0), (3,0)
-
-        # ()
 
         if self.y % 2 == 0:
             cordinates = [

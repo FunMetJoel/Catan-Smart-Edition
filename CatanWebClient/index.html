@@ -29,4 +29,18 @@
 
     <button id="connectButton" onclick="game.updateObject()">Update</button>
 
+    <select id="playerSelect">
+        <option value="0">NoPlayer</option>
+        <option value="1" selected>Player 1</option>
+        <option value="2">Player 2</option>
+        <option value="3">Player 3</option>
+        <option value="4">Player 4</option>
+    </select>
+    <script>
+        document.getElementById("playerSelect").addEventListener("change", function() {
+            game.player = (document.getElementById("playerSelect").value);
+            game.updateObject();
+        });
+    </script>
+
 </body>

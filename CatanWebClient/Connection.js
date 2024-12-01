@@ -48,6 +48,30 @@ async function setRoad(x, y, player) {
     });
 }
 
+async function setSettlement(x, y, player) {
+    return fetch(`${serverURL}/setSettlement/${x}/${y}/${player}`)
+    .then(response => response.json())
+    .then(data => {
+        // console.log(data);
+        return data;
+    })
+    .catch(error => {
+        console.error('Error setting settlement:', error);
+    });
+}
+
+async function getSettlementData() {
+    return fetch(`${serverURL}/getSettlements`)
+    .then(response => response.json())
+    .then(data => {
+        // console.log(data);
+        return data;
+    })
+    .catch(error => {
+        console.error('Error fetching settlement data:', error);
+    });
+}
+
 async function getRoadAvailability(p) {
     return fetch(`${serverURL}/getPossibleRoads/${p}`)
     .then(response => response.json())
@@ -57,5 +81,17 @@ async function getRoadAvailability(p) {
     })
     .catch(error => {
         console.error('Error getting road availability:', error);
+    });
+}
+
+async function getSettlementAvailability(p) {
+    return fetch(`${serverURL}/getPossibleSettlements/${p}`)
+    .then(response => response.json())
+    .then(data => {
+        // console.log(data);
+        return data;
+    })
+    .catch(error => {
+        console.error('Error getting settlement availability:', error);
     });
 }

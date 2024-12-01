@@ -46,6 +46,24 @@ def set_road(x, y, p):
 def get_possible_roads(p):
     return flask.jsonify(catanGame.getRoadAvailabilty(p))
 
+@app.route("/getSettlements", methods=['GET'])
+def get_settlements():
+    dataToSend = []
+    for settlement in catanGame.board.settlements:
+        dataToSend.append(settlement.player)
+
+    return flask.jsonify(dataToSend)
+
+@app.route("/setSettlement/<int:x>/<int:y>/<int:p>")
+def set_settlement(x, y, p):
+    catanGame.board.settlement(x, y).player = p
+    return flask.jsonify("Settlement set")
+
+
+@app.route("/getPossibleSettlements/<int:p>")
+def get_possible_settlements(p):
+    return flask.jsonify(catanGame.getSettlementAvailabilty(p))
+
 if __name__ == '__main__':
         app.run(
         host='0.0.0.0',	
