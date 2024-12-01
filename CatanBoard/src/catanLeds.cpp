@@ -162,12 +162,12 @@ void CoardinatesExplination() {
 // // leds[/*list green*/] = CRGB::Green;
 
 
-// void showPlayerLocations() {
-//     for (int i = 0; i < NUM_LEDS; i++) {
-//         leds[i] = playerColors[*playerLocations[i]];
-//     }
-//     FastLED.show();
-// }
+void showPlayerLocations() {
+    for (int i = 0; i < NUM_LEDS; i++) {
+        leds[i] = playerColors[*playerLocations[i]];
+    }
+    FastLED.show();
+}
 
 // void getroaddata(){
 

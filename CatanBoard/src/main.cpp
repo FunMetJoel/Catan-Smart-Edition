@@ -9,8 +9,6 @@ void setup() {
   setupLeds(&state);
 
   Serial.begin(9600);
-
-
 }
 
 void setSurroundingCorners(byte cornerX, byte cornerY, byte p){
