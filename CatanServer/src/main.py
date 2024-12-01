@@ -51,12 +51,14 @@ def get_settlements():
     dataToSend = []
     for settlement in catanGame.board.settlements:
         dataToSend.append(settlement.player)
+        dataToSend.append(settlement.level)
 
     return flask.jsonify(dataToSend)
 
-@app.route("/setSettlement/<int:x>/<int:y>/<int:p>")
-def set_settlement(x, y, p):
+@app.route("/setSettlement/<int:x>/<int:y>/<int:p>/<int:l>")
+def set_settlement(x, y, p, l):
     catanGame.board.settlement(x, y).player = p
+    catanGame.board.settlement(x, y).level = l
     return flask.jsonify("Settlement set")
 
 

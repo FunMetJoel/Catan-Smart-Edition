@@ -99,7 +99,7 @@ class CatanBoard:
             resourceType = random.choice([CatanResource.WOOD, CatanResource.BRICK, CatanResource.SHEEP, CatanResource.WHEAT, CatanResource.ORE])
             self.tiles[i] = CatanTile(resourceType, i % 11 + 2)
         self.roads = [CatanRoad(0) for i in range(72)]
-        self.settlements = [CatanSettlement(0) for i in range(54)]
+        self.settlements = [CatanSettlement(0, 0) for i in range(54)]
 
     def hex(self, x, y) -> CatanTile:
         # self.tiles is a list of CatanTile objects with length 19
@@ -165,8 +165,10 @@ class CatanRoad:
         self.player = player
 
 class CatanSettlement:
-    def __init__(self, player):
+    def __init__(self, player, level):
         self.player = player
+        self.level = level
+
 
 class CatanPlayer:
     def __init__(self, name, color, resources, settlements, cities, roads):

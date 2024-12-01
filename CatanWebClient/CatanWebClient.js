@@ -80,14 +80,32 @@ class Corner extends CanvasObject {
         this.player = 0;
         this.cornerX = cornerX;
         this.cornerY = cornerY;
+        this.level = 0;
 
-        const imageUrls = [null, "images/settlement_red.svg", "images/settlement_blue.svg", "images/settlement_green.svg", "images/settlement_yellow.svg"];
+        const imageUrls = [null, "images/bos.png", "images/brick.png", "images/shcaap.png", "images/graan.png", "images/steen.png"];
         this.images = [null]
         for (var i = 1; i < imageUrls.length; i++) {
             var image = new Image();
             image.src = imageUrls[i];
             this.images.push(image);
         }
+
+        const settlementImageUrls = [null, "images/settlement_red.svg", "images/settlement_blue.svg", "images/settlement_green.svg", "images/settlement_yellow.svg"];
+        this.settlementImages = [null]
+        for (var i = 1; i < settlementImageUrls.length; i++) {
+            var image = new Image();
+            image.src = settlementImageUrls[i];
+            this.settlementImages.push(image);
+        }
+
+        const cityImageUrls = [null, "images/city_red.svg", "images/city_blue.svg", "images/city_green.svg", "images/city_yellow.svg"];
+        this.cityImages = [null]
+        for (var i = 1; i < cityImageUrls.length; i++) {
+            var image = new Image();
+            image.src = cityImageUrls[i];
+            this.cityImages.push(image);
+        }
+
     }
 
     draw(ctx, objectCenter, objectSize) {
@@ -105,7 +123,11 @@ class Corner extends CanvasObject {
             ctx.fill();
             this.drawChildren(ctx, objectCenter, objectSize);
         }else {
-            ctx.drawImage(this.images[this.player], objectCenter.x - objectSize.x / 2, objectCenter.y - objectSize.y / 2, objectSize.x, objectSize.y);
+            if (this.level == 1) {
+                ctx.drawImage(this.settlementImages[this.player], objectCenter.x - objectSize.x / 2, objectCenter.y - objectSize.y / 2, objectSize.x, objectSize.y);
+            } else if (this.level == 2) {
+                ctx.drawImage(this.cityImages[this.player], objectCenter.x - objectSize.x / 2, objectCenter.y - objectSize.y / 2, objectSize.x, objectSize.y);
+            }
         }
     }
 
@@ -114,7 +136,11 @@ class Corner extends CanvasObject {
     }
 
     onClick() {
-        setSettlement(this.cornerX, this.cornerY, game.player)
+        let newLevel = this.level + 1;
+        if (newLevel > 2) {
+            newLevel = 1;
+        }
+        setSettlement(this.cornerX, this.cornerY, game.player, newLevel)
         .then(data => {
             game.updateObject()
         }
@@ -212,30 +238,6 @@ class CatanWebClient extends ObjectCanvas {
             }
         }
 
-        for (var j = 0; j < 6; j++) {
-            for (var i = 0; i < 12; i++) {
-
-                if (
-                    (j == 0 && i >= 7) ||
-                    (j == 1 && i >= 9) ||
-                    (j == 2 && i >= 11) ||
-                    (j == 3 && i <= 0) ||
-                    (j == 4 && i <= 2) ||
-                    (j == 5 && i <= 4)
-                ) {
-                    continue;
-                }
-                
-                var cornerX = 0.433 * (hexSize + roadSize) * (i) - 0.433 * (hexSize + roadSize) * j - 0.866 * (hexSize + roadSize) * 1.5;
-                var cornerY = 0.75 * (hexSize + roadSize) * (j) - 0.25 * (hexSize + roadSize) * (i%2) - 0.75 * (hexSize + roadSize) * 2.34;
-                var corner = new Corner(cornerX, cornerY, 3*roadSize, 3*roadSize, i, j);
-                this.corners.push(corner);
-                map.addChild(corner);
-                // var dot = new Square(0, 0, 0.1, 0.1, "#FF0000");
-                // corner.addChild(dot);
-            }
-        }
-
         for (var j = 0; j < 11; j++) {
             for (var i = 0; i < 11; i++) {
 
@@ -270,6 +272,30 @@ class CatanWebClient extends ObjectCanvas {
                 map.addChild(road);
             }
         }
+
+        for (var j = 0; j < 6; j++) {
+            for (var i = 0; i < 12; i++) {
+
+                if (
+                    (j == 0 && i >= 7) ||
+                    (j == 1 && i >= 9) ||
+                    (j == 2 && i >= 11) ||
+                    (j == 3 && i <= 0) ||
+                    (j == 4 && i <= 2) ||
+                    (j == 5 && i <= 4)
+                ) {
+                    continue;
+                }
+                
+                var cornerX = 0.433 * (hexSize + roadSize) * (i) - 0.433 * (hexSize + roadSize) * j - 0.866 * (hexSize + roadSize) * 1.5;
+                var cornerY = 0.75 * (hexSize + roadSize) * (j) - 0.25 * (hexSize + roadSize) * (i%2) - 0.75 * (hexSize + roadSize) * 2.34;
+                var corner = new Corner(cornerX, cornerY, 3*roadSize, 3*roadSize, i, j);
+                this.corners.push(corner);
+                map.addChild(corner);
+                // var dot = new Square(0, 0, 0.1, 0.1, "#FF0000");
+                // corner.addChild(dot);
+            }
+        }
     }
 
     update() {
@@ -293,10 +319,9 @@ class CatanWebClient extends ObjectCanvas {
 
         getSettlementData()
         .then(data => {
-            console.log(data);
             for (var i = 0; i < this.corners.length; i++) {
-                this.corners[i].player = data[i];
-                console.log(data[i]);
+                this.corners[i].player = data[i * 2];
+                this.corners[i].level = data[i * 2 + 1];
             }
         });
 

@@ -48,8 +48,8 @@ async function setRoad(x, y, player) {
     });
 }
 
-async function setSettlement(x, y, player) {
-    return fetch(`${serverURL}/setSettlement/${x}/${y}/${player}`)
+async function setSettlement(x, y, player, level) {
+    return fetch(`${serverURL}/setSettlement/${x}/${y}/${player}/${level}`)
     .then(response => response.json())
     .then(data => {
         // console.log(data);
