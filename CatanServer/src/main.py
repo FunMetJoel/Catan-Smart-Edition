@@ -29,7 +29,7 @@ def get_tile(x, y):
     tile = catanGame.board.hex(x, y)    
     return flask.jsonify(tile.to_dict())
 
-@app.route("/getRoads")
+@app.route("/getRoads", methods=['GET'])
 def get_roads():
     dataToSend = []
     for road in catanGame.board.roads:
@@ -37,13 +37,14 @@ def get_roads():
 
     return flask.jsonify(dataToSend)
 
-@app.route("/setRoad")
+@app.route("/setRoad/<int:x>/<int:y>/<int:p>")
 def set_road(x, y, p):
     catanGame.board.road(x, y).player = p
+    return flask.jsonify("Road set")
 
 if __name__ == '__main__':
         app.run(
         host='0.0.0.0',	
         port=5000,
-        debug=True
+        debug=False
     )

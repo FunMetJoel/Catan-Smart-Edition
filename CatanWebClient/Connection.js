@@ -1,4 +1,4 @@
-var serverURL = 'http://100.65.118.41:5000';
+var serverURL = 'http://127.0.0.1:5000';//'http://100.65.118.41:5000';
 
 function checkIfConnected() {
     fetch(`${serverURL}/ping`)

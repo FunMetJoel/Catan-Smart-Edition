@@ -1,6 +1,7 @@
 from __future__ import annotations
 import enum
 import random
+import sys
 
 class CatanState:
     def __init__(self, board:CatanBoard, players:list[CatanPlayer], current_player_id:int):
@@ -15,6 +16,11 @@ class CatanState:
 
     def __str__(self):
         return f"Board: {self.board}\nPlayers: {self.players}\nCurrent Player: {self.current_player}\nDice Roll: {self.dice_roll}"
+    
+    def getRoadAvailabilty(self):
+        for road in self.board.roads:
+            if road.player == self.current_player_id:
+                return False
     
 class CatanBoard:
     def __init__(self, tiles:list[CatanTile], roads:list[CatanRoad], settlements:list[CatanSettlement], cities):
@@ -44,20 +50,23 @@ class CatanBoard:
             return None
         if x < xoffset[y] or x-xoffset[y] >= rowsLengths[y]:
             return None
-        
+                
         return self.tiles[sum(rowsLengths[:y]) + x - xoffset[y]]
 
     def road(self, x, y) -> CatanRoad:
         # self.roads is a list of CatanRoad objects
-        rowsLengths = (5, 4, 7, 5, 9, 6, 9, 5, 7, 4, 5)
+        rowsLengths = (6, 4, 8, 5, 10, 6, 10, 5, 8, 4, 6)
         xoffset = (0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5)
         if y < 0 or y >= len(rowsLengths):
+            print("y out of bounds")
             return None
-        if x < xoffset[y] or x-xoffset[y] >= rowsLengths[y]:
+        if x < xoffset[y] or x-xoffset[y] >= (rowsLengths[y]*(1+(y%2))):
+            print("x out of bounds")
             return None
         
         # x/(1 + (y % 2)) is the n'th road in the row. the (y % 2) is to account for the nonexistent roads in the odd rows
-        return self.roads[sum(rowsLengths[:y]) + (x/(1 + (y % 2))) - xoffset[y]]
+        index = round(sum(rowsLengths[:y]) + ((x-xoffset[y])/(1 + (y % 2))))
+        return self.roads[index]
     
     def settlement(x, y) -> CatanSettlement:
         return

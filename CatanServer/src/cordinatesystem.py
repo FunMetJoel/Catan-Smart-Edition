@@ -53,7 +53,6 @@ class HexCoordinate:
         ]
         return cordinates
     
-
 class CornerCoordinate:
     """
     Coordinate system for corners of hex tiles.
@@ -114,7 +113,6 @@ class CornerCoordinate:
             ]
         return cordinates
     
-
 class EdgeCoordinate:
     """
     Coordinate system for edges of hex tiles.
@@ -186,3 +184,4 @@ class EdgeCoordinate:
                 HexCoordinate((self.x/2), (self.y-1)/2),
             ]
         return cordinates
+
