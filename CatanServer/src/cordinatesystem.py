@@ -185,3 +185,26 @@ class EdgeCoordinate:
             ]
         return cordinates
 
+    def corners(self):
+        """
+        Returns a list of corner coordinates.
+        """
+        # (0,0) -> (0,0), (1,0)
+        # (1,0) -> (1,0), (2,0)
+        # (2,0) -> (2,0), (3,0)
+
+        # ()
+
+        if self.y % 2 == 0:
+            cordinates = [
+                CornerCoordinate(self.x, round(self.y/2)),
+                CornerCoordinate(self.x+1, round(self.y/2))
+            ]
+        else:
+            cordinates = [
+                CornerCoordinate(self.x, round((self.y-1)/2)),
+                CornerCoordinate(self.x+1, round(1+((self.y-1)/2)))
+            ]
+
+        return cordinates
+

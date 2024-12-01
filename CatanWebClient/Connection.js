@@ -16,7 +16,7 @@ async function getRoadsData() {
     return fetch(`${serverURL}/getRoads`)
     .then(response => response.json())
     .then(data => {
-        console.log(data);
+        // console.log(data);
         return data;
     })
     .catch(error => {
@@ -40,10 +40,22 @@ async function setRoad(x, y, player) {
     return fetch(`${serverURL}/setRoad/${x}/${y}/${player}`)
     .then(response => response.json())
     .then(data => {
-        console.log(data);
+        // console.log(data);
         return data;
     })
     .catch(error => {
         console.error('Error setting road:', error);
+    });
+}
+
+async function getRoadAvailability(p) {
+    return fetch(`${serverURL}/getPossibleRoads/${p}`)
+    .then(response => response.json())
+    .then(data => {
+        // console.log(data);
+        return data;
+    })
+    .catch(error => {
+        console.error('Error getting road availability:', error);
     });
 }

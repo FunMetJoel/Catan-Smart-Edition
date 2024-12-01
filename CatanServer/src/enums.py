@@ -30,7 +30,7 @@ class Action(enum.IntEnum):
     BUILD_ROAD = 3
 
 # Misschien niet hardcoden
-HexCords = (
+HexCords: tuple[HexCoordinate] = (
     HexCoordinate(0, 0),
     HexCoordinate(1, 0),
     HexCoordinate(2, 0),
@@ -53,7 +53,7 @@ HexCords = (
 )
 
 # Misschien niet hardcoden
-CornerCords = (
+CornerCords: tuple[CornerCoordinate] = (
     CornerCoordinate(0, 0),
     CornerCoordinate(1, 0),
     CornerCoordinate(2, 0),
@@ -111,7 +111,7 @@ CornerCords = (
 )
 
 # Misschien niet hardcoden
-RoadCords = (
+RoadCords: tuple[EdgeCoordinate] = (
     EdgeCoordinate(0, 0),
     EdgeCoordinate(1, 0),
     EdgeCoordinate(2, 0),

@@ -127,6 +127,12 @@ class Road extends CanvasObject {
     }
 
     draw(ctx, objectCenter, objectSize) {
+        if (this.available) {
+            ctx.fillStyle = "#00FF00";
+            ctx.beginPath();
+            ctx.arc(objectCenter.x, objectCenter.y, objectSize.x / 3, 0, 2 * Math.PI);
+            ctx.fill();
+        }
         if (this.player == 0) {
             ctx.fillStyle = "#000000";
             ctx.beginPath();
@@ -257,6 +263,17 @@ class CatanWebClient extends ObjectCanvas {
         .then(data => {
             for (var i = 0; i < this.roads.length; i++) {
                 this.roads[i].player = data[i];
+            }
+        });
+
+        getRoadAvailability(1)
+        .then(data => {
+            for (var i = 0; i < this.roads.length; i++) {
+                if (data[i] == 1) {
+                    this.roads[i].available = true;
+                }else {
+                    this.roads[i].available = false;
+                }
             }
         });
     }

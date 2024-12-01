@@ -42,6 +42,10 @@ def set_road(x, y, p):
     catanGame.board.road(x, y).player = p
     return flask.jsonify("Road set")
 
+@app.route("/getPossibleRoads/<int:p>")
+def get_possible_roads(p):
+    return flask.jsonify(catanGame.getRoadAvailabilty(p))
+
 if __name__ == '__main__':
         app.run(
         host='0.0.0.0',	

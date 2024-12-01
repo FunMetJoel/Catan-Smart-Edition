@@ -66,6 +66,7 @@ class CanvasObject {
         this.pos = {x: px, y: py};
         this.scale = {x: sx, y: sy};
         this.children = [];
+        this.hidden = false;
     }
 
     addChild(child) {
@@ -77,6 +78,9 @@ class CanvasObject {
     }
 
     drawObject(ctx, center, size) {
+        if (this.hidden) {
+            return;
+        }
         var objectCenter = {x: center.x + this.pos.x * size.x, y: center.y - this.pos.y * size.y};
         var objectSize = {x: this.scale.x * size.x, y: this.scale.y * size.y};
 
