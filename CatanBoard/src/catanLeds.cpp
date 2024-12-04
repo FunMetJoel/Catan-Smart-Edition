@@ -74,7 +74,6 @@ void setupPlayerLocationsLeds(){
     playerLocations[44] = &statePointer->getEdge(8,3)->player;
     playerLocations[45] = &statePointer->getCorner(9,2)->player;
     playerLocations[46] = &statePointer->getEdge(8,4)->player;
-    
 }
 
 void CoardinatesExplination() {
@@ -123,7 +122,7 @@ void CoardinatesExplination() {
     FastLED.show();
 }
 
-CRGB playerColors[7] = {
+CRGB playerColors[PlayerColorsDivider] = {
     CRGB::Black,
     CRGB::Red,
     CRGB::Blue,
@@ -142,10 +141,17 @@ void showPlayerLocations() {
 
 
 leds[i] = playercolors[playerlocations[i]][level[i]]
-playerLocations[46] = &statePointer->catanstate.corner(1)->player;
+playerLocations[46] = &statePointer->corner(1)->player;
 
-int playercolors[4][2] = {
-    {0,0}
+int PlayerColorsDivider[8][2] = {
+    {0, 0}
+    {0, 1}
+    {1, 0}
+    {1, 1}
+    {2, 0}
+    {2, 1}
+    {3, 0}
+    {3, 1}
 }
 
 void getroaddata(){
@@ -154,6 +160,10 @@ void getroaddata(){
     }
 }
 void gethousedata(){
+    // Todo: Stuur http request om de data te krijgen
+    // Returnt housedata
+
+    //Loop door housedata
     for (int i = 0; i < 54; i++){
         catanState.corners[i].player = housedata[i * 2];
         catanState.corners[i].level; = housedata[i * 2 + 1];
