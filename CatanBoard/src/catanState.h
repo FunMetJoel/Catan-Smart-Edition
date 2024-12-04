@@ -28,6 +28,7 @@ class edge {
         edge();
         edge(byte player);
         byte player;
+        void setPlayer();
     private:
         
 };
@@ -72,11 +73,13 @@ class catanState {
         byte* getHexLocation(hex* hex);
         byte* getCornerLocation(corner* corner);
         byte* getEdgeLocation(edge* edge);
-    private:
+
         hex hexes[19];
         corner corners[54];
         edge edges[72];
         player players[6];
+    private:
+        
 };
 
 #endif // CATANSTATE_H

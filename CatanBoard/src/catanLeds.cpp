@@ -2,6 +2,7 @@
 #include <Arduino.h>
 #include <FastLED.h>
 #include "catanState.h"
+#include <string>
 
 
 
@@ -122,7 +123,7 @@ void CoardinatesExplination() {
     FastLED.show();
 }
 
-CRGB playerColors[PlayerColorsDivider] = {
+CRGB playerColors[7] = {
     CRGB::Black,
     CRGB::Red,
     CRGB::Blue,
@@ -139,24 +140,18 @@ void showPlayerLocations() {
     FastLED.show();
 }
 
+//leds[i] = playerlocations[i]][level[i]
+//playerLocations[46] = &statePointer->corner(1)->player;
 
-leds[i] = playercolors[playerlocations[i]][level[i]]
-playerLocations[46] = &statePointer->corner(1)->player;
-
-int PlayerColorsDivider[8][2] = {
-    {0, 0}
-    {0, 1}
-    {1, 0}
-    {1, 1}
-    {2, 0}
-    {2, 1}
-    {3, 0}
-    {3, 1}
+void colordivider(){
+    CRGB PlayerColorsArray[4][2] ;
+    
+    PlayerColorsArray[0][0] = CRGB::Blue;
 }
 
-void getroaddata(){
+void getroaddata() {
     for (int i = 0; i < 72; i++){
-        catanState.edge[i].player = roaddata[i];
+        &statePointer->edges[i].setPlayer(1);
     }
 }
 void gethousedata(){
@@ -165,14 +160,13 @@ void gethousedata(){
 
     //Loop door housedata
     for (int i = 0; i < 54; i++){
-        catanState.corners[i].player = housedata[i * 2];
-        catanState.corners[i].level; = housedata[i * 2 + 1];
+        &statePointer->corners[i].player = housedata[i * 2];
+        &statePointer->corners[i].level = housedata[i * 2 + 1];
     }
 }
 void gethexdata(){
     for (int i = 0; i < 72; i++){
-        catanState.hex[i].recourcetype = hexdata[i * 2];
-        catanState.hex[i].robber = hexdata[i * 2 + 1];
+        &statePointer->hexes[i].resource = hexdata[i * 2];
+        &statePointer->hexes[i].robber = hexdata[i * 2 + 1];
     }
 }
-

@@ -238,7 +238,9 @@ edge::edge() {
 edge::edge(byte player) {
     this->player = player;
 }
-
+void edge::setPlayer(byte player){
+    this->player = player
+}
 corner::corner() {
     player = 0;
     level = 0;
