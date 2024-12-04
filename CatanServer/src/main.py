@@ -66,6 +66,10 @@ def set_settlement(x, y, p, l):
 def get_possible_settlements(p):
     return flask.jsonify(catanGame.getSettlementAvailabilty(p))
 
+@app.route("/getMaterials/<int:p>")
+def get_materials(p):
+    return flask.jsonify(catanGame.players[p].resources)
+
 if __name__ == '__main__':
         app.run(
         host='0.0.0.0',	

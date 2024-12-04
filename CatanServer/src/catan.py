@@ -15,7 +15,7 @@ class CatanState:
 
     def __init__(self):
         self.board = CatanBoard()
-        self.players = []
+        self.players = [CatanPlayer() for i in range(4)]
         self.current_player = 0
 
     def __str__(self):
@@ -85,6 +85,19 @@ class CatanState:
                     settlementAvailability.append(0)
         return settlementAvailability
 
+    def getActionAvailability(self, player_id:int=None) -> list[bool]:
+        if player_id == None:
+            player_id = self.current_player
+        
+        actions = [False for i in range(len(enums.Action))]
+        actions[enums.Action.END_TURN] = True
+        actions[enums.Action.BUILD_SETTLEMENT] = self.players[player_id].hasResources([1, 1, 1, 1, 0])
+        actions[enums.Action.BUILD_CITY] = self.players[player_id].hasResources([0, 0, 3, 2, 0])
+        actions[enums.Action.BUILD_ROAD] = self.players[player_id].hasResources([1, 1, 0, 0, 0])
+        
+        return actions
+    
+    
     
 class CatanBoard:
     def __init__(self, tiles:list[CatanTile], roads:list[CatanRoad], settlements:list[CatanSettlement], cities):
@@ -175,6 +188,12 @@ class CatanPlayer:
         self.name = name
         self.color = color
         self.resources = resources
-        self.settlements = settlements
-        self.cities = cities
-        self.roads = roads
+
+    def __init__(self):
+        self.resources = [0, 0, 0, 0, 0]
+        
+    def hasResources(self, resources):
+        for i, resource in enumerate(resources):
+            if self.resources[i] < resource:
+                return False
+        return True
