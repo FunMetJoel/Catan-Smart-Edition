@@ -3,15 +3,7 @@
 #include <FastLED.h>
 #include "catanState.h"
 
-CRGB playerColors[7] = {
-    CRGB::Black,
-    CRGB::Red,
-    CRGB::Blue,
-    CRGB::White,
-    CRGB::Yellow,
-    CRGB::Green,
-    CRGB::Brown
-};
+
 
 #define NUM_LEDS 200
 #define LED_PIN 2
@@ -131,36 +123,15 @@ void CoardinatesExplination() {
     FastLED.show();
 }
 
-// //vectors!!  1 ,2 ,0 ,1
-// ledlighter::ledlighter(){ 
-//     for (int i = 0; i < 72; i++) {
-
-
-//         int locationcoulor() = update[i * 2] {
-//             if locationlist = 0{
-//                 leds[i] = CRGB::Red;
-//             }
-//             if a = 1;
-//             if a = 2;
-//             if a = 3;
-//             if a = 4;
-//         }
-
-//         int locationbuilding() = update[i * 2 + 1] {
-//             if b = 0 ;
-//             if b = 1 ;
-//             if b = 2 ;
-//         }
-//     }
-// }
-
-// // int rednumber;
-// // //72[0,1,2,0,0,1]
-// // leds[/*list red*/] = CRGB::Red; //straat en gebouw
-// // leds[/*list blue*/] = CRGB::Blue;
-// // leds[/*list yellow*/] = CRGB::Yellow;// stad
-// // leds[/*list green*/] = CRGB::Green;
-
+CRGB playerColors[7] = {
+    CRGB::Black,
+    CRGB::Red,
+    CRGB::Blue,
+    CRGB::White,
+    CRGB::Yellow,
+    CRGB::Green,
+    CRGB::Brown
+};
 
 void showPlayerLocations() {
     for (int i = 0; i < NUM_LEDS; i++) {
@@ -169,22 +140,29 @@ void showPlayerLocations() {
     FastLED.show();
 }
 
-// void getroaddata(){
 
+leds[i] = playercolors[playerlocations[i]][level[i]]
+playerLocations[46] = &statePointer->catanstate.corner(1)->player;
 
+int playercolors[4][2] = {
+    {0,0}
+}
 
-// }
-// void gethousedata(){
-//     for (int i = 0; i < 72; i++){
-//         catanState.corners[i].player = housedata[i * 2];
-//         catanState.corners[i].level; = housedata[i * 2 + 1];
-//     }
-// }
-// void gethexdata(){
-//     for (int i = 0; i < 72; i++){
-//         hex x = i * 2
-//     }
-    
-
-// }
+void getroaddata(){
+    for (int i = 0; i < 72; i++){
+        catanState.edge[i].player = roaddata[i];
+    }
+}
+void gethousedata(){
+    for (int i = 0; i < 54; i++){
+        catanState.corners[i].player = housedata[i * 2];
+        catanState.corners[i].level; = housedata[i * 2 + 1];
+    }
+}
+void gethexdata(){
+    for (int i = 0; i < 72; i++){
+        catanState.hex[i].recourcetype = hexdata[i * 2];
+        catanState.hex[i].robber = hexdata[i * 2 + 1];
+    }
+}
 
