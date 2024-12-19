@@ -4,8 +4,6 @@
 #include "catanState.h"
 #include <string>
 
-
-
 #define NUM_LEDS 200
 #define LED_PIN 2
 
@@ -145,8 +143,10 @@ void showPlayerLocations() {
 
 void colordivider(){
     CRGB PlayerColorsArray[4][2] ;
+    {blue , lightblue},
+    {green , orange}   
     
-    PlayerColorsArray[0][0] = CRGB::Blue;
+    leds[x] = CRGB::PlayerColorArray[/*PLAYER*/][/*LEVEL*/]
 }
 
 void getroaddata() {
