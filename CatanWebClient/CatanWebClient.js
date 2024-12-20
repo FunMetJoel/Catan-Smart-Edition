@@ -35,9 +35,9 @@ class Hex extends CanvasObject {
             this.text
         );
 
-        const imageUrls = [null, "images/bos.png", "images/brick.png", "images/shcaap.png", "images/graan.png", "images/steen.png"];
-        this.images = [null]
-        for (var i = 1; i < imageUrls.length; i++) {
+        const imageUrls = ["images/bos.png", "images/brick.png", "images/shcaap.png", "images/graan.png", "images/steen.png"];
+        this.images = []
+        for (var i = 0; i < imageUrls.length; i++) {
             var image = new Image();
             image.src = imageUrls[i];
             this.images.push(image);
@@ -52,6 +52,7 @@ class Hex extends CanvasObject {
     }
 
     draw(ctx, objectCenter, objectSize) {
+        console.log(this.recource);
         ctx.drawImage(this.images[this.recource], objectCenter.x - objectSize.x / 2, objectCenter.y - objectSize.y / 2, objectSize.x, objectSize.y);
         if (this.selected) {
             ctx.drawImage(this.overlayImage, objectCenter.x - objectSize.x / 2, objectCenter.y - objectSize.y / 2, objectSize.x, objectSize.y);

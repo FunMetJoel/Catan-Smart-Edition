@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import flask
 from flask_cors import CORS
 import catan
@@ -5,6 +7,8 @@ import catan
 app = flask.Flask(__name__)
 CORS(app)
 catanGame = catan.CatanState()
+
+enforceRules = False
 
 users = []
 
@@ -57,6 +61,23 @@ def get_settlements():
 
 @app.route("/setSettlement/<int:x>/<int:y>/<int:p>/<int:l>")
 def set_settlement(x, y, p, l):
+    if enforceRules:        
+        if l == 1:
+            if catanGame.players[p].hasResources([1, 1, 1, 1]) == False:
+                return flask.jsonify("Not enough resources")
+        
+            possibleSettlements = catanGame.getSettlementAvailabilty(p)
+            if possibleSettlements[catanGame.board.getsettlementindex(x, y)] == False:
+                return flask.jsonify("Cannot build settlement here")
+        
+        if l == 2:
+            if catanGame.players[p].hasResources([2, 3, 0, 0]) == False:
+                return flask.jsonify("Not enough resources")
+            
+            if catanGame.board.settlement(x, y).level != 1:
+                return flask.jsonify("Cannot build city here")
+            
+        
     catanGame.board.settlement(x, y).player = p
     catanGame.board.settlement(x, y).level = l
     return flask.jsonify("Settlement set")
@@ -69,6 +90,10 @@ def get_possible_settlements(p):
 @app.route("/getMaterials/<int:p>")
 def get_materials(p):
     return flask.jsonify(catanGame.players[p].resources)
+
+@app.route("/rollDice")
+def roll_dice():
+    return flask.jsonify(catanGame.rollDice())
 
 if __name__ == '__main__':
         app.run(

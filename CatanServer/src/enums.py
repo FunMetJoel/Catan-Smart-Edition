@@ -2,19 +2,20 @@ import enum
 from cordinatesystem import HexCoordinate, EdgeCoordinate, CornerCoordinate
 
 class Resource(enum.IntEnum):
-    WOOD = 1
-    BRICK = 2
-    SHEEP = 3
-    WHEAT = 4
-    ORE = 5
+    WOOD = 0
+    BRICK = 1
+    SHEEP = 2
+    WHEAT = 3
+    ORE = 4
 
 class TileType(enum.IntEnum):
-    DESERT = 0
-    WOOD = 1
-    BRICK = 2
-    SHEEP = 3
-    WHEAT = 4
-    ORE = 5
+    WOOD = 0
+    BRICK = 1
+    SHEEP = 2
+    WHEAT = 3
+    ORE = 4
+    DESERT = 5
+
 
 class DevelopmentCard(enum.IntEnum):
     KNIGHT = 0

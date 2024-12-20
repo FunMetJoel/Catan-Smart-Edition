@@ -27,7 +27,7 @@
         //game.start();
     </script>
 
-    <button id="connectButton" onclick="game.updateObject()">Update</button>
+    <button id="connectButton" onclick="updataAll()">Update</button>
 
     <select id="playerSelect">
         <option value="0">NoPlayer</option>
@@ -39,8 +39,29 @@
     <script>
         document.getElementById("playerSelect").addEventListener("change", function() {
             game.player = (document.getElementById("playerSelect").value);
-            game.updateObject();
+            updataAll();
         });
     </script>
 
+    <p>
+        Wood: <span id="wood">0</span><br>
+        Brick: <span id="brick">0</span><br>
+        Wheat: <span id="wheat">0</span><br>
+        Sheep: <span id="sheep">0</span><br>
+        Ore: <span id="ore">0</span><br>
+    </p>
+
+    <script>
+        function updataAll() {
+            game.updateObject();
+            getMaterials(game.player)
+            .then(materials => {
+                document.getElementById("wood").innerText = materials[0];
+                document.getElementById("brick").innerText = materials[1];
+                document.getElementById("sheep").innerText = materials[2];
+                document.getElementById("wheat").innerText = materials[3];
+                document.getElementById("ore").innerText = materials[4];
+            });
+        }
+    </script>
 </body>

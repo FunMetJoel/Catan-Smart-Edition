@@ -1,22 +1,67 @@
 from __future__ import annotations
 import enum
 import enums
-from enums import Resource
+from enums import Resource, TileType
 from cordinatesystem import HexCoordinate, CornerCoordinate
 import random
 import sys
 import time
 
 class CatanState:
-    def __init__(self, board:CatanBoard, players:list[CatanPlayer], current_player_id:int):
+    def __init__(self, board:CatanBoard, players:list[CatanPlayer], current_player_id:int, round:int):
         self.board = board
         self.players = players
         self.current_player = current_player_id
+        self.round = round
 
     def __init__(self):
         self.board = CatanBoard()
         self.players = [CatanPlayer() for i in range(4)]
         self.current_player = 0
+        self.round = 0
+    
+    def endTurn(self):
+        self.nextPlayer()
+        self.rollDice()
+    
+    def rollDice(self, roll:int=None) -> int:
+        if roll == None:
+            roll = random.randint(1, 6) + random.randint(1, 6)
+        
+        for i, tile in enumerate(self.board.tiles):
+            if tile.number == roll:
+                for corner in enums.HexCords[i].corners():
+                    settlement = self.board.settlement(corner.x, corner.y)
+                    if settlement != None and settlement.player != 1:
+                        self.players[self.current_player-1].resources[tile.tile_type] += settlement.level
+                        
+        return roll
+        
+    def nextPlayer(self):
+        print(self.round)
+        if self.round == 1:
+            self.current_player = ((self.current_player - 1) % 4) + 1
+            if self.current_player == 1:
+                self.round = 2
+                
+        else:
+            self.current_player += 1
+            print(self.current_player)
+            
+            if self.current_player == 1:
+                self.round = 1
+                if self.round == 1:
+                    self.current_player = 4
+                    
+            elif self.current_player > 4:
+                self.current_player = 1
+                self.round += 1
+            
+    def isFinished(self) -> bool:
+        for player in self.players:
+            if sum(player.resources) >= 10:
+                return True
+        return False
 
     def __str__(self):
         return f"Board: {self.board}\nPlayers: {self.players}\nCurrent Player: {self.current_player}\nDice Roll: {self.dice_roll}"
@@ -28,6 +73,10 @@ class CatanState:
         for i in range(72):
             if self.board.roads[i].player != 0:
                 roadAvailability.append(False)
+                continue
+            
+            if self.round < 2:
+                roadAvailability.append(True)
                 continue
 
             neighbors = enums.RoadCords[i].neighbors()
@@ -61,7 +110,10 @@ class CatanState:
             if self.board.settlements[i].player != 0:
                 settlementAvailability.append(False)
                 continue
-
+            
+            if self.round < 2:
+                settlementAvailability.append(True)
+                continue
             neighbors = enums.CornerCords[i].neighbors()
             for neighbor in neighbors:
                 neighborSettlement = self.board.settlement(neighbor.x, neighbor.y)
@@ -91,9 +143,15 @@ class CatanState:
         
         actions = [False for i in range(len(enums.Action))]
         actions[enums.Action.END_TURN] = True
-        actions[enums.Action.BUILD_SETTLEMENT] = self.players[player_id].hasResources([1, 1, 1, 1, 0])
-        actions[enums.Action.BUILD_CITY] = self.players[player_id].hasResources([0, 0, 3, 2, 0])
-        actions[enums.Action.BUILD_ROAD] = self.players[player_id].hasResources([1, 1, 0, 0, 0])
+        actions[enums.Action.BUILD_SETTLEMENT] = self.players[player_id-1].hasResources([1, 1, 1, 1, 0])
+        actions[enums.Action.BUILD_CITY] = self.players[player_id-1].hasResources([0, 0, 3, 2, 0])
+        actions[enums.Action.BUILD_ROAD] = self.players[player_id-1].hasResources([1, 1, 0, 0, 0])
+        
+        if self.round < 2:
+            actions[enums.Action.BUILD_CITY] = False
+            actions[enums.Action.BUILD_ROAD] = True
+            actions[enums.Action.BUILD_SETTLEMENT] = True
+            actions[enums.Action.END_TURN] = True
         
         return actions
     
@@ -108,13 +166,22 @@ class CatanBoard:
 
     def __init__(self):
         self.tiles = [CatanTile for i in range(19)]
+        
+        totalResourceTypes = [TileType.WOOD, TileType.WOOD, TileType.WOOD, TileType.WOOD, TileType.BRICK, TileType.BRICK, TileType.BRICK, TileType.SHEEP, TileType.SHEEP, TileType.SHEEP, TileType.SHEEP, TileType.WHEAT, TileType.WHEAT, TileType.WHEAT, TileType.WHEAT, TileType.ORE, TileType.ORE, TileType.ORE, TileType.ORE]
+        random.shuffle(totalResourceTypes)
         for i in range(19):
-            resourceType = random.choice([CatanResource.WOOD, CatanResource.BRICK, CatanResource.SHEEP, CatanResource.WHEAT, CatanResource.ORE])
+            resourceType = totalResourceTypes[i]
             self.tiles[i] = CatanTile(resourceType, i % 11 + 2)
         self.roads = [CatanRoad(0) for i in range(72)]
         self.settlements = [CatanSettlement(0, 0) for i in range(54)]
 
     def hex(self, x, y) -> CatanTile:
+        index = self.gethexindex(x, y)
+        if index == None:
+            return None
+        return self.tiles[index]
+    
+    def gethexindex(self, x, y):
         # self.tiles is a list of CatanTile objects with length 19
         # 3      16  17  18              (2,4) (3,4) (4,4)
         # 4    12  13  14  15         (1,3) (2,3) (3,3) (4,3)
@@ -129,9 +196,15 @@ class CatanBoard:
         if x < xoffset[y] or x-xoffset[y] >= rowsLengths[y]:
             return None
                 
-        return self.tiles[sum(rowsLengths[:y]) + x - xoffset[y]]
+        return sum(rowsLengths[:y]) + x - xoffset[y]
 
     def road(self, x, y) -> CatanRoad:
+        index = self.getroadindex(x, y)
+        if index == None:
+            return None
+        return self.roads[index]
+    
+    def getroadindex(self, x, y):
         # self.roads is a list of CatanRoad objects
         rowsLengths = (6, 4, 8, 5, 10, 6, 10, 5, 8, 4, 6)
         xoffset = (0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5)
@@ -141,11 +214,16 @@ class CatanBoard:
             return None
         
         # x/(1 + (y % 2)) is the n'th road in the row. the (y % 2) is to account for the nonexistent roads in the odd rows
-        index = round(sum(rowsLengths[:y]) + ((x-xoffset[y])/(1 + (y % 2))))
-        return self.roads[index]
+        return round(sum(rowsLengths[:y]) + ((x-xoffset[y])/(1 + (y % 2))))
     
     def settlement(self, x, y) -> CatanSettlement:
-        # self.settlements is a list of CatanSettlement objects
+        index = self.getsettlementindex(x, y)
+        if index == None:
+            return None
+        
+        return self.settlements[index]
+    
+    def getsettlementindex(self, x, y):
         rowsLengths = (7, 9, 11, 11, 9, 7)
         xoffset = (0, 0, 0, 1, 3, 5)
         if y < 0 or y >= len(rowsLengths):
@@ -153,7 +231,7 @@ class CatanBoard:
         if x < xoffset[y] or x-xoffset[y] >= rowsLengths[y]:
             return None
         
-        return self.settlements[sum(rowsLengths[:y]) + x - xoffset[y]]
+        return sum(rowsLengths[:y]) + x - xoffset[y]
 
 class CatanResource(enum.IntEnum):
     WOOD = 1
@@ -166,6 +244,7 @@ class CatanTile:
     def __init__(self, tile_type, number):
         self.tile_type = tile_type
         self.number = number
+        self.robber = False
 
     def to_dict(self):
         return {
@@ -197,3 +276,7 @@ class CatanPlayer:
             if self.resources[i] < resource:
                 return False
         return True
+    
+    def removeResources(self, resources):
+        for i, resource in enumerate(resources):
+            self.resources[i] -= resource

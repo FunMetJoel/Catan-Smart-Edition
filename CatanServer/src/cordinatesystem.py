@@ -24,7 +24,7 @@ class HexCoordinate:
     def __hash__(self):
         return hash((self.x, self.y))
     
-    def neighbors(self):
+    def neighbors(self) -> list[HexCoordinate]:
         """
         Returns a list of neighboring coordinates.
         """
@@ -38,7 +38,7 @@ class HexCoordinate:
         ]
         return [self + direction for direction in directions]
     
-    def corners(self):
+    def corners(self) -> list[CornerCoordinate]:
         """
         Returns a list of corners.
         """
@@ -50,6 +50,20 @@ class HexCoordinate:
             CornerCoordinate(self.x*2+1, self.y + 1),
             CornerCoordinate(self.x*2+2, self.y + 1),
             CornerCoordinate(self.x*2+3, self.y + 1),
+        ]
+        return cordinates
+    
+    def edges(self) -> list[EdgeCoordinate]:
+        """
+        Returns a list of edges.
+        """
+        cordinates = [
+            EdgeCoordinate(self.x*2, self.y*2),
+            EdgeCoordinate(self.x*2+1, self.y*2),
+            EdgeCoordinate(self.x*2, self.y*2+1),
+            EdgeCoordinate(self.x*2+2, self.y*2+1),
+            EdgeCoordinate(self.x*2+1, self.y*2+2),
+            EdgeCoordinate(self.x*2+2, self.y*2+2),
         ]
         return cordinates
     

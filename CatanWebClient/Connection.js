@@ -28,7 +28,7 @@ async function getTileData(x, y) {
     return fetch(`${serverURL}/getTile/${x}/${y}`)
     .then(response => response.json())
     .then(data => {
-        // console.log(data);
+        console.log(data);
         return data;
     })
     .catch(error => {
@@ -93,5 +93,17 @@ async function getSettlementAvailability(p) {
     })
     .catch(error => {
         console.error('Error getting settlement availability:', error);
+    });
+}
+
+async function getMaterials(p) {
+    return fetch(`${serverURL}/getMaterials/${p}`)
+    .then(response => response.json())
+    .then(data => {
+        // console.log(data);
+        return data;
+    })
+    .catch(error => {
+        console.error('Error getting materials:', error);
     });
 }
