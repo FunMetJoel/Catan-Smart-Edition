@@ -115,19 +115,19 @@ class firstNN(abstractCatanBot.CatanBot):
             # print("End turn")
         elif actions == 1:
             roadMask = game_state.getEdgeMask()
-            roads = roads * roadMask
+            roads[~roadMask] = -np.inf
             road = np.argmax(roads)
             game_state.buildRoad(road)
             # print("Build road")
         elif actions == 2:
             settlementMask = game_state.getCornerMask()
-            settlements = settlements * settlementMask
+            settlements[~settlementMask] = -np.inf
             settlement = np.argmax(settlements)
             game_state.buildSettlement(settlement)
             print("Build settlement (+1) at", settlement)
         elif actions == 3:
             cityMask = game_state.getCityMask()
-            settlements = settlements * cityMask
+            settlements[~cityMask] = -np.inf
             city = np.argmax(settlements)
             game_state.buildCity(city)
             print("Build city (+2) at", city)
@@ -267,9 +267,9 @@ def plot_durations(show_result=False):
     plt.plot(winnersPoints_t.numpy())
     plt.plot(roundActions)
     # Take 100 episode averages and plot them too
-    if len(winnersPoints_t) >= 100:
-        means = winnersPoints_t.unfold(0, 100, 1).mean(1).view(-1)
-        means = torch.cat((torch.zeros(99), means))
+    if len(winnersPoints_t) >= 25:
+        means = winnersPoints_t.unfold(0, 25, 1).mean(1).view(-1)
+        means = torch.cat((torch.zeros(12), means))
         plt.plot(means.numpy())
 
     plt.pause(0.001)  # pause a bit so that plots are updated
