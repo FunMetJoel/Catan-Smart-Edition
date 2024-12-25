@@ -10,7 +10,7 @@ function checkIfConnected() {
         console.error('Error fetching tile data:', error);
     });
 }
-setInterval(checkIfConnected, 5000);
+// setInterval(checkIfConnected, 5000);
 
 async function getRoadsData() {
     return fetch(`${serverURL}/getRoads`)
@@ -28,7 +28,7 @@ async function getTileData(x, y) {
     return fetch(`${serverURL}/getTile/${x}/${y}`)
     .then(response => response.json())
     .then(data => {
-        console.log(data);
+        // console.log(data);
         return data;
     })
     .catch(error => {
@@ -76,7 +76,7 @@ async function getRoadAvailability(p) {
     return fetch(`${serverURL}/getPossibleRoads/${p}`)
     .then(response => response.json())
     .then(data => {
-        // console.log(data);
+        console.log(data);
         return data;
     })
     .catch(error => {
@@ -88,7 +88,7 @@ async function getSettlementAvailability(p) {
     return fetch(`${serverURL}/getPossibleSettlements/${p}`)
     .then(response => response.json())
     .then(data => {
-        // console.log(data);
+        console.log(data);
         return data;
     })
     .catch(error => {

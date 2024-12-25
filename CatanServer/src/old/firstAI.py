@@ -1,8 +1,8 @@
 import torch
 import torch.nn as nn
 import numpy as np
-import catan
-import botobject
+import old.catan as catan
+import old.botobject as botobject
 import cordinatesystem
 import enums
 

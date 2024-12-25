@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import flask
 from flask_cors import CORS
-import catan
+import old.catan as catan
 
 app = flask.Flask(__name__)
 CORS(app)

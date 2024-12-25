@@ -52,7 +52,6 @@ class Hex extends CanvasObject {
     }
 
     draw(ctx, objectCenter, objectSize) {
-        console.log(this.recource);
         ctx.drawImage(this.images[this.recource], objectCenter.x - objectSize.x / 2, objectCenter.y - objectSize.y / 2, objectSize.x, objectSize.y);
         if (this.selected) {
             ctx.drawImage(this.overlayImage, objectCenter.x - objectSize.x / 2, objectCenter.y - objectSize.y / 2, objectSize.x, objectSize.y);

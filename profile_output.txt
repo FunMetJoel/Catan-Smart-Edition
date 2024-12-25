@@ -1,0 +1,83 @@
+Timer unit: 1e-07 s
+
+Total time: 10.2593 s
+File: c:\Users\Informatica\Documents\GitHub\Catan-Smart-Edition\CatanServer\src\firstNN.py
+Function: interpret_state at line 41
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    41                                               @line_profiler.profile
+    42                                               def interpret_state(self, game_state:catanData.CatanState):
+    43     22582     756620.0     33.5      0.7          hextensors = np.zeros((19, 21))
+    44     22582     249465.0     11.0      0.2          playertensors = np.zeros((4, 5))
+    45                                                   
+    46                                                   
+    47    451640     943550.0      2.1      0.9          for i in range(19):
+    48    429058    1179889.0      2.7      1.2              hex = game_state.hexes[i]
+    49                                                       # hextensors[i][0] = hex[0] # Resource
+    50                                                       # hextensors[i][1] = hex[1] # Dice roll
+    51                                                       # hextensors[i][2] = hex[2] # Has robber
+    52    429058    1174858.0      2.7      1.1              cornerInxexes = compiledHexIndex.neighbourCorners[i]
+    53    429058    1001281.0      2.3      1.0              corners = []
+    54   3003406    7283112.0      2.4      7.1              for cornerIndex in cornerInxexes:
+    55   2574348    6289532.0      2.4      6.1                  corner = game_state.corners[cornerIndex]
+    56   2574348    4029347.0      1.6      3.9                  corners.append(corner)
+    57    429058    1167580.0      2.7      1.1              edgeIndexes = compiledHexIndex.neighbourEdges[i]
+    58    429058     920416.0      2.1      0.9              edges = []
+    59   3003406    7457857.0      2.5      7.3              for edgeIndex in edgeIndexes:
+    60   2574348    6370192.0      2.5      6.2                  edge = game_state.edges[edgeIndex]
+    61   2574348    3982549.0      1.5      3.9                  edges.append(edge)
+    62                                                       # hextensors[i][3] = self.normalizePlayer(corners[0][0], game_state.currentPlayer)
+    63                                                       # hextensors[i][4] = corners[0][1]
+    64                                                       # hextensors[i][5] = self.normalizePlayer(corners[1][0], game_state.currentPlayer)
+    65                                                       # hextensors[i][6] = corners[1][1]
+    66                                                       # hextensors[i][7] = self.normalizePlayer(corners[2][0], game_state.currentPlayer)
+    67                                                       # hextensors[i][8] = corners[2][1]
+    68                                                       # hextensors[i][9] = self.normalizePlayer(corners[3][0], game_state.currentPlayer)
+    69                                                       # hextensors[i][10] = corners[3][1]
+    70                                                       # hextensors[i][11] = self.normalizePlayer(corners[4][0], game_state.currentPlayer)
+    71                                                       # hextensors[i][12] = corners[4][1]
+    72                                                       # hextensors[i][13] = self.normalizePlayer(corners[5][0], game_state.currentPlayer)
+    73                                                       # hextensors[i][14] = corners[5][1]
+    74                                                       # hextensors[i][15] = self.normalizePlayer(edges[0][0], game_state.currentPlayer)
+    75                                                       # hextensors[i][16] = self.normalizePlayer(edges[1][0], game_state.currentPlayer)
+    76                                                       # hextensors[i][17] = self.normalizePlayer(edges[2][0], game_state.currentPlayer)
+    77                                                       # hextensors[i][18] = self.normalizePlayer(edges[3][0], game_state.currentPlayer)
+    78                                                       # hextensors[i][19] = self.normalizePlayer(edges[4][0], game_state.currentPlayer)
+    79                                                       # hextensors[i][20] = self.normalizePlayer(edges[5][0], game_state.currentPlayer)            
+    80                                                       
+    81    429058    7003351.0     16.3      6.8              hextensors[i] = [
+    82    429058     933091.0      2.2      0.9                  hex[0], # Resource
+    83    429058     802365.0      1.9      0.8                  hex[1], # Dice roll
+    84    429058     785664.0      1.8      0.8                  hex[2], # Has robber
+    85    429058    3422504.0      8.0      3.3                  self.normalizePlayer(corners[0][0], game_state.currentPlayer),
+    86    429058     815647.0      1.9      0.8                  corners[0][1],
+    87    429058    2709452.0      6.3      2.6                  self.normalizePlayer(corners[1][0], game_state.currentPlayer),
+    88    429058     845968.0      2.0      0.8                  corners[1][1],
+    89    429058    2709713.0      6.3      2.6                  self.normalizePlayer(corners[2][0], game_state.currentPlayer),
+    90    429058     830819.0      1.9      0.8                  corners[2][1],
+    91    429058    2631244.0      6.1      2.6                  self.normalizePlayer(corners[3][0], game_state.currentPlayer),
+    92    429058     833791.0      1.9      0.8                  corners[3][1],
+    93    429058    2679354.0      6.2      2.6                  self.normalizePlayer(corners[4][0], game_state.currentPlayer),
+    94    429058     830313.0      1.9      0.8                  corners[4][1],
+    95    429058    2657141.0      6.2      2.6                  self.normalizePlayer(corners[5][0], game_state.currentPlayer),
+    96    429058     838873.0      2.0      0.8                  corners[5][1],
+    97    429058    2969979.0      6.9      2.9                  self.normalizePlayer(edges[0][0], game_state.currentPlayer),
+    98    429058    2902609.0      6.8      2.8                  self.normalizePlayer(edges[1][0], game_state.currentPlayer),
+    99    429058    2921279.0      6.8      2.8                  self.normalizePlayer(edges[2][0], game_state.currentPlayer),
+   100    429058    2903878.0      6.8      2.8                  self.normalizePlayer(edges[3][0], game_state.currentPlayer),
+   101    429058    2899979.0      6.8      2.8                  self.normalizePlayer(edges[4][0], game_state.currentPlayer),
+   102    429058    2891895.0      6.7      2.8                  self.normalizePlayer(edges[5][0], game_state.currentPlayer)
+   103                                                       ]
+   104                                                       
+   105    112910     244978.0      2.2      0.2          for i in range(4):
+   106     90328     245837.0      2.7      0.2              playerdata = game_state.players[i]
+   107                                                               
+   108    541968    1041222.0      1.9      1.0              for j in range(5):
+   109    451640    1814066.0      4.0      1.8                  playertensors[i][j] = float(playerdata[j])
+   110                                                               
+   111     22582    6327058.0    280.2      6.2          hextensors = torch.tensor(hextensors, dtype=torch.float)
+   112     22582     991506.0     43.9      1.0          playertensors = torch.tensor(playertensors, dtype=torch.float)
+   113     22582     303439.0     13.4      0.3          return hextensors, playertensors
+
+ 10.26 seconds - c:\Users\Informatica\Documents\GitHub\Catan-Smart-Edition\CatanServer\src\firstNN.py:41 - interpret_state

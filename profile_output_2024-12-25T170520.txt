@@ -1,0 +1,62 @@
+Timer unit: 1e-07 s
+
+Total time: 183.612 s
+File: c:\Users\Informatica\Documents\GitHub\Catan-Smart-Edition\CatanServer\src\firstNN.py
+Function: make_move at line 87
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    87                                               @line_profiler.profile
+    88                                               def make_move(self, game_state):
+    89     20259  462306434.0  22819.8     25.2          hexes, players = self.interpret_state(game_state)
+    90                                                   
+    91     20259     667115.0     32.9      0.0          hexes = hexes.to(device)
+    92     20259     123634.0      6.1      0.0          players = players.to(device)
+    93                                                   
+    94     40518    5177740.0    127.8      0.3          with torch.no_grad():
+    95     20259 1210740723.0  59763.1     65.9              actions, roads, settlements, tradefor, tradewidth = self.model(hexes, players)
+    96                                                       
+    97     20258    2664096.0    131.5      0.1          actions = actions.numpy()
+    98     20258     401565.0     19.8      0.0          roads = roads.numpy()
+    99     20258     356573.0     17.6      0.0          settlements = settlements.numpy()
+   100     20258     348226.0     17.2      0.0          tradefor = tradefor.numpy()
+   101     20258     351968.0     17.4      0.0          tradewidth = tradewidth.numpy()
+   102                                                   
+   103     20258  136029498.0   6714.9      7.4          actionMask = game_state.getActionMask()
+   104                                                   
+   105    121548     414558.0      3.4      0.0          for i in range(len(actions)):
+   106    101290    2264680.0     22.4      0.1              if actionMask[i] == 0:
+   107     69505     383044.0      5.5      0.0                  actions[i] = 0
+   108                                                   
+   109     20258    2785191.0    137.5      0.2          actions = np.argmax(actions)
+   110     20258      74709.0      3.7      0.0          if actions == 0:
+   111     16393    7555395.0    460.9      0.4              game_state.endTurn()
+   112                                                       # print("End turn")
+   113      3865      13329.0      3.4      0.0          elif actions == 1:
+   114      1099    1915858.0   1743.3      0.1              roadMask = game_state.getEdgeMask()
+   115      1099      50200.0     45.7      0.0              roads = roads * roadMask
+   116      1099      52507.0     47.8      0.0              road = np.argmax(roads)
+   117      1099      62067.0     56.5      0.0              game_state.buildRoad(road)
+   118                                                       # print("Build road")
+   119      2766      10569.0      3.8      0.0          elif actions == 2:
+   120        75     121136.0   1615.1      0.0              settlementMask = game_state.getCornerMask()
+   121        75       3415.0     45.5      0.0              settlements = settlements * settlementMask
+   122        75       3391.0     45.2      0.0              settlement = np.argmax(settlements)
+   123        75       4913.0     65.5      0.0              game_state.buildSettlement(settlement)
+   124        75     277879.0   3705.1      0.0              print("Build settlement (+1) at", settlement)
+   125      2691       9162.0      3.4      0.0          elif actions == 3:
+   126        65     120297.0   1850.7      0.0              cityMask = game_state.getCornerMask()
+   127        65       2971.0     45.7      0.0              settlements = settlements * cityMask
+   128        65       3258.0     50.1      0.0              city = np.argmax(settlements)
+   129        65       3742.0     57.6      0.0              game_state.buildCity(city)
+   130        65     253933.0   3906.7      0.0              print("Build city (+2) at", city)
+   131      2626       7061.0      2.7      0.0          elif actions == 4:
+   132      2626      97907.0     37.3      0.0              tradeFor = np.argmax(tradefor)
+   133      2626     135648.0     51.7      0.0              tradewidthMask = game_state.getTradeWithBankMask()
+   134      2626     108485.0     41.3      0.0              tradewidth = tradewidth * tradewidthMask
+   135      2626      88124.0     33.6      0.0              tradeWith = np.argmax(tradewidth)
+   136      2626     127952.0     48.7      0.0              game_state.tradeWithBank(tradeWith, tradeFor)
+   137                                                       
+   138                                                       # print("Trade", tradeFor, "for 4x", tradeWith)
+
+183.61 seconds - c:\Users\Informatica\Documents\GitHub\Catan-Smart-Edition\CatanServer\src\firstNN.py:87 - make_move

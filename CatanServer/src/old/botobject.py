@@ -1,4 +1,4 @@
-import catan
+import old.catan as catan
 
 class CatanBot():
     def __init__(self, name: str, description: str):
