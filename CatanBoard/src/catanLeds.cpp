@@ -80,25 +80,6 @@ void CoardinatesExplination() {
         leds[i] = CRGB::Black;
     }
 
-    // leds[1] = CRGB(23 * (0+1), 42 * (1+1), 0);
-    // leds[3] = CRGB(23 * (1+1), 42 * (1+1), 0);
-    // leds[5] = CRGB(23 * (2+1), 42 * (1+1), 0);
-    // leds[8] = CRGB(23 * (3+1), 42 * (1+1), 0);
-    // leds[10] = CRGB(23 * (4+1), 42 * (1+1), 0);
-    // leds[12] = CRGB(23 * (5+1), 42 * (2+1), 0);
-    // leds[15] = CRGB(23 * (5+1), 42 * (1+1), 0);
-    // leds[17] = CRGB(23 * (6+1), 42 * (1+1), 0);
-    // leds[19] = CRGB(23 * (7+1), 42 * (2+1), 0);
-    // leds[21] = CRGB(23 * (6+1), 42 * (2+1), 0);
-    // leds[24] = CRGB(23 * (0+1), 42 * (0+1), 0);
-    // leds[26] = CRGB(23 * (1+1), 42 * (0+1), 0);
-    // leds[28] = CRGB(23 * (2+1), 42 * (0+1), 0);
-    // leds[31] = CRGB(23 * (3+1), 42 * (0+1), 0);
-    // leds[33] = CRGB(23 * (4+1), 42 * (0+1), 0);
-    // leds[36] = CRGB(23 * (5+1), 42 * (0+1), 0);
-    // leds[38] = CRGB(23 * (6+1), 42 * (0+1), 0);
-    // leds[40] = CRGB(23 * (7+1), 42 * (1+1), 0);
-
     leds[1] = CRGB(255, 0, 0);
     leds[3] = CRGB(0, 255, 0);
     leds[5] = CRGB(0, 0, 255);
@@ -142,11 +123,13 @@ void showPlayerLocations() {
 //playerLocations[46] = &statePointer->corner(1)->player;
 
 void colordivider(){
-    CRGB PlayerColorsArray[4][2] ;
-    {blue , lightblue},
-    {green , orange}   
+    CRGB PlayerColorsArray[4][2];
+    {Blue , Lightblue},
+    {Green , Lightgreen},
+    {Yellow, Orange},
+    {Red, Purple}  
     
-    leds[x] = CRGB::PlayerColorArray[/*PLAYER*/][/*LEVEL*/]
+    leds[i] = CRGB::PlayerColorArray[/*PLAYER in i*/][/*LEVEL in i*/];               /*this into showplayerlocation, this is wrong, no i use*/
 }
 
 void getroaddata() {
