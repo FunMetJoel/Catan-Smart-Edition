@@ -5,37 +5,45 @@ import catanData as Catan
 import compiledCordinateSystem as ccs
 
 from firstNN import firstNN
+from firstTree import firstTreeBot
 import numpy as np
 import random
 from compiledCordinateSystem import compiledCornerIndex
+import torch
 
 app = flask.Flask(__name__)
 CORS(app)
-ai = firstNN()
+ai = firstTreeBot()
+# ai = firstNN()
+# ai.model.load_state_dict(torch.load("modelTest.pth"))
 
 catanGame = Catan.CatanState()
 
-for i in range(4):
-    for j in range(2):
-        cornerMask = catanGame.getCornerMask(i)
-        randomIndex = np.random.randint(52)
-        while not cornerMask[randomIndex]:
-            randomIndex = np.random.randint(52)
-        catanGame.corners[randomIndex][0] = i+1
-        catanGame.corners[randomIndex][1] = 1
+# while catanGame.round < 2:
+#     ai.make_opening_move(catanGame)
+#     catanGame.endTurn()
         
-        edgeMask = catanGame.getEdgeMask(i)
-        ramdomRoadIndex = random.choice(compiledCornerIndex.neighbourEdges[randomIndex])
-        while not edgeMask[ramdomRoadIndex]:
-            ramdomRoadIndex = random.choice(compiledCornerIndex.neighbourEdges[randomIndex])
-        catanGame.edges[ramdomRoadIndex][0] = i+1
-        catanGame.edges[ramdomRoadIndex][1] = 1
-        
-catanGame.round = 2
-
 enforceRules = False
 
 users = []
+
+@app.route('/makeOpeningMove')
+def make_opening_move():
+    ai.make_opening_move(catanGame)
+    catanGame.endTurn()
+    
+    return flask.jsonify(f"Opening Move Made")
+
+@app.route('/resetGame')
+def reset_game():
+    global catanGame
+    catanGame = Catan.CatanState()
+    
+    while catanGame.round < 2:
+        ai.make_opening_move(catanGame)
+        catanGame.endTurn()
+        
+    return flask.jsonify("Game Reset")
 
 @app.route('/')
 def home():
@@ -99,6 +107,26 @@ def play_ai_game():
     for i in range(100):
         ai.make_move(catanGame)
     return flask.jsonify("Ai Made 100 Moves")
+
+@app.route('/playUntilPlayer/<int:p>')
+def play_until_player(p):
+    while catanGame.currentPlayer != p:
+        ai.make_move(catanGame)
+    return flask.jsonify("Ai Made Moves Until Player "+str(p))
+
+@app.route('/getMaterials/<int:p>')
+def get_materials(p):
+    return flask.jsonify(catanGame.players[p-1].tolist())
+
+@app.route('/trade/<int:give>/<int:get>')
+def trade(give, get):
+    catanGame.tradeWithBank(give, get)
+    return flask.jsonify("Trade Made")
+
+@app.route('/endTurn')
+def end_turn():
+    catanGame.endTurn()
+    return flask.jsonify("Turn Ended")
 
 
 def RUN():

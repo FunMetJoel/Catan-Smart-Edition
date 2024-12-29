@@ -23,6 +23,44 @@ class CatanState:
         for i in range(19):
             self.hexes[i][1] = diceRolls[i]
             
+    def setupRandomly(self):
+        for i in range(4):
+            for j in range(2):
+                cornerMask = self.getCornerMask(i)
+                randomIndex = np.random.randint(52)
+                while not cornerMask[randomIndex]:
+                    randomIndex = np.random.randint(52)
+                self.corners[randomIndex][0] = i+1
+                self.corners[randomIndex][1] = 1
+                
+                edgeMask = self.getEdgeMask(i)
+                ramdomRoadIndex = random.choice(compiledCornerIndex.neighbourEdges[randomIndex])
+                while not edgeMask[ramdomRoadIndex]:
+                    ramdomRoadIndex = random.choice(compiledCornerIndex.neighbourEdges[randomIndex])
+                self.edges[ramdomRoadIndex][0] = i+1
+                self.edges[ramdomRoadIndex][1] = 1
+                
+        self.round = 2
+            
+    def copy(self):
+        """copy returns a copy of the current state.
+        
+        Returns:
+            CatanState: A copy of the current state.
+        """
+        copy = CatanState()
+        
+        copy.hexes = self.hexes.copy()
+        copy.edges = self.edges.copy()
+        copy.corners = self.corners.copy()
+        copy.players = self.players.copy()
+        copy.points = self.points.copy()
+        
+        copy.currentPlayer = self.currentPlayer
+        copy.round = self.round
+        
+        return copy
+    
     def hasGameEnded(self) -> bool:
         """hasGameEnded returns True if the game has ended, otherwise False.
         
@@ -38,11 +76,22 @@ class CatanState:
     def endTurn(self):
         """endTurnAction is called when the player ends their turn. It increments the currentPlayer and the round.
         """
-        self.currentPlayer = (self.currentPlayer + 1) % 4
-        if self.currentPlayer == 0:
-            self.round += 1
+        if self.round == 0:
+            self.currentPlayer = (self.currentPlayer + 1) % 4
+            if self.currentPlayer == 0:
+                self.round += 1
+                self.currentPlayer = 3
+        elif self.round == 1:
+            self.currentPlayer = (self.currentPlayer - 1) % 4
+            if self.currentPlayer == 3:
+                self.round += 1
+                self.currentPlayer = 0
+        else:
+            self.currentPlayer = (self.currentPlayer + 1) % 4
+            if self.currentPlayer == 0:
+                self.round += 1
         
-        self.rollDice()
+            self.rollDice()
             
     def rollDice(self) -> int:
         """rollDiceAction is called when the player rolls the dice. It returns the sum of two random numbers between 1 and 6.
@@ -75,8 +124,10 @@ class CatanState:
         self.edges[edgeIndex][0] = self.currentPlayer+1
         self.edges[edgeIndex][1] = 1
         
-        self.players[self.currentPlayer][0] -= 1
-        self.players[self.currentPlayer][1] -= 1
+        if self.round >= 2:
+            self.players[self.currentPlayer][0] -= 1
+            self.players[self.currentPlayer][1] -= 1
+        
         
     def buildSettlement(self, cornerIndex):
         """buildSettlementAction is called when the player builds a settlement. It sets the player and level values of the corner.
@@ -89,10 +140,17 @@ class CatanState:
         self.corners[cornerIndex][0] = self.currentPlayer+1
         self.corners[cornerIndex][1] = 1
         
-        self.players[self.currentPlayer][0] -= 1
-        self.players[self.currentPlayer][1] -= 1
-        self.players[self.currentPlayer][2] -= 1
-        self.players[self.currentPlayer][3] -= 1
+        if self.round >= 2:
+            self.players[self.currentPlayer][0] -= 1
+            self.players[self.currentPlayer][1] -= 1
+            self.players[self.currentPlayer][2] -= 1
+            self.players[self.currentPlayer][3] -= 1
+        else:
+            # give player materials 
+            for hexIndex in compiledCornerIndex.neighbourHexes[cornerIndex]:
+                if hexIndex == -1:
+                    continue
+                self.players[self.currentPlayer][self.hexes[hexIndex][0]] += 1
         
         self.points[self.currentPlayer] += 1
         
@@ -153,18 +211,35 @@ class CatanState:
         
         mask = np.zeros(72, dtype=bool)
         
-        for i in range(72):
-            if self.edges[i][0] == 0:
-                # mask[i] = True
-                for edgeIndex in compiledEdgeIndex.neighbourEdges[i]:
+        if self.round < 2:
+            # loop trough all corners
+            for i in range(54):
+                if self.corners[i][0] != playerIndex+1:
+                    continue
+                
+                # check if already has a road
+                for edgeIndex in compiledCornerIndex.neighbourEdges[i]:
                     if self.edges[edgeIndex][0] == playerIndex+1:
-                        mask[i] = True
                         break
-                for cornerIndex in compiledEdgeIndex.neighbourCorners[i]:
-                    if self.corners[cornerIndex][0] == playerIndex+1:
-                        mask[i] = True
-                        break
+                else:
+                    # does not have a road
+                    for edgeIndex in compiledCornerIndex.neighbourEdges[i]:
+                        mask[edgeIndex] = True
+                        
+        else:
+            for i in range(72):
+                if self.edges[i][0] == 0:
+                    # mask[i] = True
+                    for cornerIndex in compiledEdgeIndex.neighbourCorners[i]:
+                        if self.corners[cornerIndex][0] == playerIndex+1:
+                            mask[i] = True
+                            break
                     
+                    for edgeIndex in compiledEdgeIndex.neighbourEdges[i]:
+                        if self.edges[edgeIndex][0] == playerIndex+1:
+                            mask[i] = True
+                            break
+                
         return mask
     
     def getCornerMask(self, player=None) -> np.array:
@@ -219,19 +294,22 @@ class CatanState:
         
         return mask
     
-    def getTradeWithBankMask(self) -> np.array:
+    def getTradeWithBankMask(self, player=None) -> np.array:
         """getTradeWithBankMask returns a mask of the trades that the current player can make with the bank.
         
         Returns:
             np.array: A mask of the trades that the current player can make with the bank.
         """
+        if player is None:
+            player = self.currentPlayer
+        
         mask = np.zeros(5, dtype=bool)
         
-        mask[0] = self.players[self.currentPlayer][0] > 3
-        mask[1] = self.players[self.currentPlayer][1] > 3
-        mask[2] = self.players[self.currentPlayer][2] > 3
-        mask[3] = self.players[self.currentPlayer][3] > 3
-        mask[4] = self.players[self.currentPlayer][4] > 3
+        mask[0] = self.players[player][0] > 3
+        mask[1] = self.players[player][1] > 3
+        mask[2] = self.players[player][2] > 3
+        mask[3] = self.players[player][3] > 3
+        mask[4] = self.players[player][4] > 3
         
         return mask
         

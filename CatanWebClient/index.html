@@ -28,6 +28,7 @@
     </script>
 
     <button id="connectButton" onclick="updataAll()">Update</button>
+    <button id="endTurnButton" onclick="endTurnAndPlay()">End Turn</button>
 
     <select id="playerSelect">
         <option value="0">NoPlayer</option>
@@ -64,4 +65,13 @@
             });
         }
     </script>
+
+    <script>
+        function endTurnAndPlay() {
+            endTurn(game.player).then(() => {
+                playUntill(game.player-1);
+                updataAll();
+            });
+        }
+     </script>
 </body>

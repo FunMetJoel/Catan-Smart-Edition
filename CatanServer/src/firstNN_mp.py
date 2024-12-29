@@ -12,6 +12,7 @@ import random
 import matplotlib
 import matplotlib.pyplot as plt
 import datetime
+import multiprocessing as mp
 # import line_profiler
 # import os
 
@@ -112,32 +113,33 @@ class firstNN(abstractCatanBot.CatanBot):
         actions = np.argmax(actions)
         if actions == 0:
             game_state.endTurn()
-            print("End turn")
+            # print("End turn")
         elif actions == 1:
             roadMask = game_state.getEdgeMask()
             roads[~roadMask] = -np.inf
             road = np.argmax(roads)
             game_state.buildRoad(road)
-            print("Build road at", road)
+            # print("Build road")
         elif actions == 2:
             settlementMask = game_state.getCornerMask()
             settlements[~settlementMask] = -np.inf
             settlement = np.argmax(settlements)
             game_state.buildSettlement(settlement)
-            print("Build settlement (+1) at", settlement)
+            # print("Build settlement (+1) at", settlement)
         elif actions == 3:
             cityMask = game_state.getCityMask()
             settlements[~cityMask] = -np.inf
             city = np.argmax(settlements)
             game_state.buildCity(city)
-            print("Build city (+2) at", city)
+            # print("Build city (+2) at", city)
         elif actions == 4:
             tradeFor = np.argmax(tradefor)
             tradewidthMask = game_state.getTradeWithBankMask()
             tradewidth[~tradewidthMask] = -np.inf
             tradeWith = np.argmax(tradewidth)
             game_state.tradeWithBank(tradeWith, tradeFor)
-            print("Trade", tradeFor, "for 4x", tradeWith)
+            
+            # print("Trade", tradeFor, "for 4x", tradeWith)
             
     def make_move(self, game_state):
         hexes, players = self.interpret_state(game_state)
@@ -219,7 +221,6 @@ class firstNN(abstractCatanBot.CatanBot):
         roads[~roadMask] = -np.inf
         road = np.argmax(roads)
         game_state.buildRoad(road)
-            
         
 class CatanAiModel(nn.Module):
     def __init__(self):
@@ -331,45 +332,20 @@ class CatanAiModel(nn.Module):
         tradeWith = self.OutputTradeWith(b)
         
         return action, roads, settlements, tradeFor, tradeWith
-    
-winnersPoints = []
-roundActions = []
 
-def plot_durations(show_result=False):
-    plt.figure(1)
-    winnersPoints_t = torch.tensor(winnersPoints, dtype=torch.float)
-    if show_result:
-        plt.title('Result')
-    else:
-        plt.clf()
-        plt.title('Training...')
-    plt.xlabel('Episode')
-    plt.ylabel('winnersPoints')
-    plt.plot(winnersPoints_t.numpy())
-    plt.plot(roundActions)
-    # Take 100 episode averages and plot them too
-    if len(winnersPoints_t) >= 25:
-        means = winnersPoints_t.unfold(0, 25, 1).mean(1).view(-1)
-        means = torch.cat((torch.zeros(12), means))
-        plt.plot(means.numpy())
-
-    plt.pause(0.001)  # pause a bit so that plots are updated
-    
-    
-if __name__ == "__main__":
-    if input("Train model? (y/n): ") != "y":
-        exit()
-        
+# Define your function
+def train_bot(process_id):
+    print(f"Process {process_id} started.")
     startDateTime = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-    
     bots = [firstNN(), firstNN(), firstNN(), firstNN()]
     totalScore = [0, 0, 0, 0]
-    
     episode = 0
+    
     while True:
         episode += 1
         game = catanData.CatanState()
         
+        # Game initialization
         for i in range(4):
             for j in range(2):
                 cornerMask = game.getCornerMask(i)
@@ -385,56 +361,57 @@ if __name__ == "__main__":
                     ramdomRoadIndex = random.choice(compiledCornerIndex.neighbourEdges[randomIndex])
                 game.edges[ramdomRoadIndex][0] = i+1
                 game.edges[ramdomRoadIndex][1] = 1
-                
+        
         game.round = 2
         
+        # Play the game
         for i in range(1000):
             currentBot = bots[game.currentPlayer]
             currentBot.make_move(game)
-            # print(game.currentPlayer, game.round)
-            # print(game.players[game.currentPlayer])
             if game.hasGameEnded():
-                roundActions.append(i/100)
                 break
-        else:
-            roundActions.append(1000/100)
-            
-        winnersPoints.append(game.points[np.argmax(game.points)])
         
+        # Update scores
         for i in range(4):
             totalScore[i] += game.points[i].item()
-            
-        plot_durations()
         
-        print("Episode", episode, "Scores:", totalScore, "Winner:", np.argmax(game.points), "Points:", game.points[np.argmax(game.points)], "rounds:", game.round)
+        print(f"Process {process_id} - Episode {episode}, Scores: {totalScore}")
         
+        # Save model and create new bots every 25 episodes
         if episode % 25 == 0:
             bestBot = np.argmax(totalScore)
             secondBestBot = np.argsort(totalScore)[-2]
-            print("Best bot:", bestBot,"Secondbest bot:", secondBestBot, "Scores:", totalScore)
-            torch.save(bots[bestBot].model.state_dict(), f"model{startDateTime}.pth")
+            torch.save(bots[bestBot].model.state_dict(), f"model{process_id}_{startDateTime}.pth")
             
-            newBots:list[firstNN] = [firstNN(), firstNN(), firstNN(), firstNN()]
+            newBots = [firstNN(), firstNN(), firstNN(), firstNN()]
             newBots[0].model.load_state_dict(bots[bestBot].model.state_dict())
             newBots[1].model.load_state_dict(bots[secondBestBot].model.state_dict())
             newBots[2].model.load_state_dict(bots[bestBot].model.state_dict())
             newBots[3].model.load_state_dict(bots[secondBestBot].model.state_dict())
                 
             for i in range(2):
-                # Mutate the model
                 for param in newBots[i].model.parameters():
                     param.data += 0.1 * torch.randn_like(param)
-                    
-            bots = newBots
             
+            bots = newBots
             totalScore = [0, 0, 0, 0]
 
+if __name__ == "__main__":
+    if input("Train model? (y/n): ") != "y":
+        exit()
         
-        
-        
-
-        
-        
-        
-        
+    mp.set_start_method("spawn")
     
+    num_processes = 10 # Adjust based on the number of available CPU cores
+    processes = []
+    
+    # Start processes
+    for i in range(num_processes):
+        p = mp.Process(target=train_bot, args=(i,))
+        processes.append(p)
+        p.start()
+    
+    # Join processes (wait for them to finish)
+    for p in processes:
+        p.join()
+        

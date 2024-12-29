@@ -107,3 +107,27 @@ async function getMaterials(p) {
         console.error('Error getting materials:', error);
     });
 }
+
+async function endTurn() {
+    return fetch(`${serverURL}/endTurn`)
+    .then(response => response.json())
+    .then(data => {
+        // console.log(data);
+        return data;
+    })
+    .catch(error => {
+        console.error('Error ending turn:', error);
+    });
+}
+
+async function playUntill(p) {
+    return fetch(`${serverURL}/playUntilPlayer/${p}`)
+    .then(response => response.json())
+    .then(data => {
+        // console.log(data);
+        return data;
+    })
+    .catch(error => {
+        console.error('Error playing untill:', error);
+    });
+}

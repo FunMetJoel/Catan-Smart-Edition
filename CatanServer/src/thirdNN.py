@@ -12,8 +12,8 @@ import random
 import matplotlib
 import matplotlib.pyplot as plt
 import datetime
-# import line_profiler
-# import os
+import line_profiler
+import os
 
 # os.environ["LINE_PROFILE"] = "1"
 
@@ -21,7 +21,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 plt.ion()
 
-class firstNN(abstractCatanBot.CatanBot):
+class thirdNN(abstractCatanBot.CatanBot):
     def __init__(self, model:CatanAiModel):
         self.model = model
         self.model.to(device)
@@ -41,7 +41,7 @@ class firstNN(abstractCatanBot.CatanBot):
     # @line_profiler.profile
     def interpret_state(self, game_state:catanData.CatanState):
         hextensors = np.zeros((19, 21))
-        playertensors = np.zeros((4, 5))
+        playertensor = np.zeros(5)
         
         
         for i in range(19):
@@ -78,75 +78,22 @@ class firstNN(abstractCatanBot.CatanBot):
             hextensors[i][19] = self.normalizePlayer(edges[4][0], game_state.currentPlayer)
             hextensors[i][20] = self.normalizePlayer(edges[5][0], game_state.currentPlayer)            
             
-        for i in range(4):
-            playerdata = game_state.players[i]
-                    
-            for j in range(5):
-                playertensors[i][j] = float(playerdata[j])
+        
+        for j in range(5):
+            playertensor[j] = float(game_state.players[game_state.currentPlayer][j])
                     
         hextensors = torch.tensor(hextensors, dtype=torch.float)
-        playertensors = torch.tensor(playertensors, dtype=torch.float)
-        return hextensors, playertensors
+        playertensor = torch.tensor(playertensor, dtype=torch.float)
+        return hextensors, playertensor
     
     def make_move(self, game_state):
-        hexes, players = self.interpret_state(game_state)
+        hexes, player = self.interpret_state(game_state)
         
         hexes = hexes.to(device)
-        players = players.to(device)
+        player = player.to(device)
         
         with torch.no_grad():
-            actions, roads, settlements, tradefor, tradewidth = self.model(hexes, players)
-            
-        actions = actions.numpy()
-        roads = roads.numpy()
-        settlements = settlements.numpy()
-        tradefor = tradefor.numpy()
-        tradewidth = tradewidth.numpy()
-        
-        actionMask = game_state.getActionMask()
-        
-        for i in range(len(actions)):
-            if actionMask[i] == 0:
-                actions[i] = 0
-        
-        actions = np.argmax(actions)
-        if actions == 0:
-            game_state.endTurn()
-            print("End turn")
-        elif actions == 1:
-            roadMask = game_state.getEdgeMask()
-            roads[~roadMask] = -np.inf
-            road = np.argmax(roads)
-            game_state.buildRoad(road)
-            print("Build road at", road)
-        elif actions == 2:
-            settlementMask = game_state.getCornerMask()
-            settlements[~settlementMask] = -np.inf
-            settlement = np.argmax(settlements)
-            game_state.buildSettlement(settlement)
-            print("Build settlement (+1) at", settlement)
-        elif actions == 3:
-            cityMask = game_state.getCityMask()
-            settlements[~cityMask] = -np.inf
-            city = np.argmax(settlements)
-            game_state.buildCity(city)
-            print("Build city (+2) at", city)
-        elif actions == 4:
-            tradeFor = np.argmax(tradefor)
-            tradewidthMask = game_state.getTradeWithBankMask()
-            tradewidth[~tradewidthMask] = -np.inf
-            tradeWith = np.argmax(tradewidth)
-            game_state.tradeWithBank(tradeWith, tradeFor)
-            print("Trade", tradeFor, "for 4x", tradeWith)
-            
-    def make_move(self, game_state):
-        hexes, players = self.interpret_state(game_state)
-        
-        hexes = hexes.to(device)
-        players = players.to(device)
-        
-        with torch.no_grad():
-            actions, roads, settlements, tradefor, tradewidth = self.model(hexes, players)
+            actions, roads, settlements, tradefor, tradewidth = self.model(hexes, player)
             
         actions = actions.numpy()
         roads = roads.numpy()
@@ -193,13 +140,13 @@ class firstNN(abstractCatanBot.CatanBot):
             
     def make_opening_move(self, game_state):
         # place settlement
-        hexes, players = self.interpret_state(game_state)
+        hexes, player = self.interpret_state(game_state)
         
         hexes = hexes.to(device)
-        players = players.to(device)
+        player = player.to(device)
         
         with torch.no_grad():
-            actions, roads, settlements, tradefor, tradewidth = self.model(hexes, players)
+            actions, roads, settlements, tradefor, tradewidth = self.model(hexes, player)
             
         settlementMask = game_state.getCornerMask()
         settlements[~settlementMask] = -np.inf
@@ -207,21 +154,22 @@ class firstNN(abstractCatanBot.CatanBot):
         game_state.buildSettlement(settlement)
         
         # place road
-        hexes, players = self.interpret_state(game_state)
+        hexes, player = self.interpret_state(game_state)
         
         hexes = hexes.to(device)
-        players = players.to(device)
+        player = player.to(device)
         
         with torch.no_grad():
-            actions, roads, settlements, tradefor, tradewidth = self.model(hexes, players)
+            actions, roads, settlements, tradefor, tradewidth = self.model(hexes, player)
             
         roadMask = game_state.getEdgeMask()
         roads[~roadMask] = -np.inf
         road = np.argmax(roads)
         game_state.buildRoad(road)
-            
+        
         
 class CatanAiModel(nn.Module):
+    @line_profiler.profile
     def __init__(self):
         super().__init__()
         # 19 hexes, 21 values each and 4 players, 6 values each
@@ -232,22 +180,42 @@ class CatanAiModel(nn.Module):
                 nn.ReLU()
             ) for _ in range(19)
         ])
+        
+        self.hexes2 = nn.ModuleList([
+            nn.Sequential(
+                nn.Linear(64, 64),
+                nn.ReLU()
+            ) for _ in range(19)
+        ])
 
         # Define the heads for the 6-size input vectors
-        self.players = nn.ModuleList([
-            nn.Sequential(
-                nn.Linear(5, 32),
-                nn.ReLU()
-            ) for _ in range(4)
-        ])
+        self.player = nn.Sequential(
+            nn.Linear(5, 32),
+            nn.ReLU()
+        )
+        
+        self.player2 = nn.Sequential(
+            nn.Linear(32, 32),
+            nn.ReLU()
+        )
 
         # Example output processing layer, combining all head outputs
         self.fullyConnected1 = nn.Sequential(
-            nn.Linear(19 * 64 + 4 * 32, 128*32),
+            nn.Linear(19 * 64 + 32, 128*32),
             nn.ReLU()
         )
         
         self.fullyConnected2 = nn.Sequential(
+            nn.Linear(128*32, 128*32),
+            nn.ReLU()
+        )
+        
+        self.fullyConnected3 = nn.Sequential(
+            nn.Linear(128*32, 128*32),
+            nn.ReLU()
+        )
+        
+        self.fullyConnected4 = nn.Sequential(
             nn.Linear(128*32, 64*32),
             nn.ReLU()
         )
@@ -302,22 +270,34 @@ class CatanAiModel(nn.Module):
             nn.Linear(64*32, 5),
             nn.Sigmoid()
         )
-        
+    
+    @line_profiler.profile
     def forward(self, input_hexes, input_players):
         # Apply each head to the corresponding vector in input_21
         processed_hexes = [head(vector) for head, vector in zip(self.hexes, input_hexes)]
         processed_hexes = torch.cat(processed_hexes, dim=-1)  # Concatenate along the feature dimension
 
+        # processed_hexes = [head(vector) for head, vector in zip(self.hexes2, processed_hexes)]
+        # processed_hexes = torch.cat(processed_hexes, dim=-1)  # Concatenate along the feature dimension
+
+
         # Apply each head to the corresponding vector in input_6
-        processed_players = [head(vector) for head, vector in zip(self.players, input_players)]
-        processed_players = torch.cat(processed_players, dim=-1)  # Concatenate along the feature dimension
+        # processed_players = [head(vector) for head, vector in zip(self.players, input_players)]
+        # processed_players = torch.cat(processed_players, dim=-1)  # Concatenate along the feature dimension
+        processedPlayer = self.player(input_players)
+        processedPlayer = self.player2(processedPlayer)
+
+        # processed_players = [head(vector) for head, vector in zip(self.players2, processed_players)]
+        # processed_players = torch.cat(processed_players, dim=-1)  # Concatenate along the feature dimension
 
         # Combine all processed outputs
-        combined = torch.cat([processed_hexes, processed_players], dim=-1)
+        combined = torch.cat([processed_hexes, processedPlayer], dim=-1)
 
         # Final output processing
         w = self.fullyConnected1(combined)
         w = self.fullyConnected2(w)
+        w = self.fullyConnected3(w)
+        w = self.fullyConnected4(w)
         x = self.actionHead(w)
         y = self.roadsHead(w)
         z = self.settlementsHead(w)
@@ -362,7 +342,7 @@ if __name__ == "__main__":
         
     startDateTime = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
     
-    bots = [firstNN(), firstNN(), firstNN(), firstNN()]
+    bots = [thirdNN(), thirdNN(), thirdNN(), thirdNN()]
     totalScore = [0, 0, 0, 0]
     
     episode = 0
@@ -395,6 +375,7 @@ if __name__ == "__main__":
             # print(game.players[game.currentPlayer])
             if game.hasGameEnded():
                 roundActions.append(i/100)
+                game.points[np.argmax(game.points)] += 10
                 break
         else:
             roundActions.append(1000/100)
@@ -408,13 +389,13 @@ if __name__ == "__main__":
         
         print("Episode", episode, "Scores:", totalScore, "Winner:", np.argmax(game.points), "Points:", game.points[np.argmax(game.points)], "rounds:", game.round)
         
-        if episode % 25 == 0:
+        if episode % 20 == 0:
             bestBot = np.argmax(totalScore)
             secondBestBot = np.argsort(totalScore)[-2]
             print("Best bot:", bestBot,"Secondbest bot:", secondBestBot, "Scores:", totalScore)
             torch.save(bots[bestBot].model.state_dict(), f"model{startDateTime}.pth")
             
-            newBots:list[firstNN] = [firstNN(), firstNN(), firstNN(), firstNN()]
+            newBots:list[thirdNN] = [thirdNN(), thirdNN(), thirdNN(), thirdNN()]
             newBots[0].model.load_state_dict(bots[bestBot].model.state_dict())
             newBots[1].model.load_state_dict(bots[secondBestBot].model.state_dict())
             newBots[2].model.load_state_dict(bots[bestBot].model.state_dict())
@@ -425,6 +406,9 @@ if __name__ == "__main__":
                 for param in newBots[i].model.parameters():
                     param.data += 0.1 * torch.randn_like(param)
                     
+            for i in range(4):
+                newBots[i].model.to(device)
+                
             bots = newBots
             
             totalScore = [0, 0, 0, 0]
