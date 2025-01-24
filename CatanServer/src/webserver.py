@@ -4,12 +4,12 @@ from flask_cors import CORS
 import catanData as Catan
 import compiledCordinateSystem as ccs
 
-from firstNN import firstNN
+#from firstNN import firstNN
 from firstTree import firstTreeBot
 import numpy as np
 import random
 from compiledCordinateSystem import compiledCornerIndex
-import torch
+#import torch
 
 app = flask.Flask(__name__)
 CORS(app)

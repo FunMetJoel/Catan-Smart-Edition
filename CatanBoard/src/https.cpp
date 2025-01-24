@@ -7,8 +7,9 @@ const char* ssid = "WIFISSID";
 const char* password = "WIFIPASSWORD";
 
 //Your Domain name with URL path or IP address with path
-String serverName = "http://192.168.137.208:5000";
-
+String serverRoad = "http://192.168.137.230:5000";
+String serverHuis = "" ;
+String serverHex =  "" ;
 
 unsigned long lastTime = 0;
 
@@ -26,6 +27,7 @@ void setup() {
 
 }
 
+//void ServerGet()
 void loop() {
   //Send an HTTP POST request every 10 minutes
   if ((millis() - lastTime) > timerDelay) {
@@ -33,7 +35,7 @@ void loop() {
     if(WiFi.status()== WL_CONNECTED){
       HTTPClient http;
 
-      String serverPath = serverName + "?temperature=24.37";
+      String serverPath = serverRoad + "?temperature=24.37";
       
       // Your Domain name with URL path or IP address with path
       http.begin(serverPath.c_str());

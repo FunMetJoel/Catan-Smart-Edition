@@ -122,34 +122,34 @@ void showPlayerLocations() {
 //leds[i] = playerlocations[i]][level[i]
 //playerLocations[46] = &statePointer->corner(1)->player;
 
-void colordivider(){
-    CRGB PlayerColorsArray[4][2];
-    {Blue , Lightblue},
-    {Green , Lightgreen},
-    {Yellow, Orange},
-    {Red, Purple}  
+// void colordivider(){
+//     CRGB PlayerColorsArray[4][2];
+//     {Blue , Lightblue},
+//     {Green , Lightgreen},
+//     {Yellow, Orange},
+//     {Red, Purple}  
     
-    leds[i] = CRGB::PlayerColorArray[/*PLAYER in i*/][/*LEVEL in i*/];               /*this into showplayerlocation, this is wrong, no i use*/
-}
+//     leds[i] = CRGB::PlayerColorArray[/*PLAYER in i*/][/*LEVEL in i*/];               /*this into showplayerlocation, this is wrong, no i use*/
+// }
 
-void getroaddata() {
-    for (int i = 0; i < 72; i++){
-        &statePointer->edges[i].setPlayer(1);
-    }
-}
-void gethousedata(){
-    // Todo: Stuur http request om de data te krijgen
-    // Returnt housedata
+// void getroaddata() {
+//     for (int i = 0; i < 72; i++){
+//         &statePointer->edges[i].setPlayer(1);
+//     }
+// }
+// void gethousedata(){
+//     // Todo: Stuur http request om de data te krijgen
+//     // Returnt housedata
 
-    //Loop door housedata
-    for (int i = 0; i < 54; i++){
-        &statePointer->corners[i].player = housedata[i * 2];
-        &statePointer->corners[i].level = housedata[i * 2 + 1];
-    }
-}
-void gethexdata(){
-    for (int i = 0; i < 72; i++){
-        &statePointer->hexes[i].resource = hexdata[i * 2];
-        &statePointer->hexes[i].robber = hexdata[i * 2 + 1];
-    }
-}
+//     //Loop door housedata
+//     for (int i = 0; i < 54; i++){
+//         &statePointer->corners[i].player = housedata[i * 2];
+//         &statePointer->corners[i].level = housedata[i * 2 + 1];
+//     }
+// }
+// void gethexdata(){
+//     for (int i = 0; i < 72; i++){
+//         &statePointer->hexes[i].resource = hexdata[i * 2];
+//         &statePointer->hexes[i].robber = hexdata[i * 2 + 1];
+//     }
+// }

@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "catanLeds.h"
 #include "catanState.h"
+//#include "https.h"
 
 catanState state;
 
@@ -22,6 +23,7 @@ void setSurroundingCorners(byte cornerX, byte cornerY, byte p){
 
 void loop() {
   showPlayerLocations();
+  //ServerGet();  <- server lists pullen 
 
   // Read serial input until a newline character is received
   if (Serial.available() > 0) {
