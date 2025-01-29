@@ -1,89 +1,101 @@
+#include "https.h"
 #include <Arduino.h>
+#include "catanState.h"
 #include <WiFi.h>
 #include <HTTPClient.h>
+
 
 // put function declarations here:
 const char* ssid = "WIFISSID";
 const char* password = "WIFIPASSWORD";
 
-//Your Domain name with URL path or IP address with path
-IpAdress() {
-  String serverRoad = "http://192.168.137.230:5000";
-  String serverHuis = "" ;
-  String serverHex =  "" ;
-}
-unsigned long lastTime = 0;
+String serverRoad = "http://192.168.137.208:5000";
+String serverHouse = "http://192.168.137.208:5000"; //even van jowel vragen
+String serverHex = "http://192.168.137.208:5000";
 
-unsigned long timerDelay = 5000;
 
-void starthttps() {
-  Serial.begin(9600); 
+void setupHttp( ) {
+Serial.begin(9600); 
 
   WiFi.begin(ssid, password);
-  Serial.println("Connecting");
-  while(WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
+  if(WiFi.status() != WL_CONNECTED) {
+    bool wificonnect = true;
 
+  }
+//    licht effecten?? knipper lichies    
+//  else {
+//error message
+//  }
 }
 
-void ServerPost()
-http.POST("test")
-
-
-
-//void ServerGet()
-void ServerGet() {
-  //Send an HTTP POST request every 10 minutes
-  if ((millis() - lastTime) > timerDelay) {
-    //Check WiFi connection status
-    if(WiFi.status()== WL_CONNECTED){
-      HTTPClient http;
-
-      String serverPath = IpAdress(Server) + "?temperature=24.37";
-      //server = 1,2 or 3...
-      // Your Domain name with URL path or IP address with path
-      http.begin(serverPath.c_str());
-      
-      // If you need Node-RED/server authentication, insert user and password below
-      //http.setAuthorization("REPLACE_WITH_SERVER_USERNAME", "REPLACE_WITH_SERVER_PASSWORD");
-      
-      // Send HTTP GET request
-      int httpResponseCode = http.GET();            /
-      
-      if (httpResponseCode>0) {
-        Serial.print("HTTP Response code: ");
-        Serial.println(httpResponseCode);
-        String payload = http.getString();              /*<--*/
-        Serial.println(payload);
-      }
-      else {
-        Serial.print("Error code: ");
-        Serial.println(httpResponseCode);
-      }
-      // Free resources
-      http.end();
-    }
-    else {
-      Serial.println("WiFi Disconnected");
-    }
-    lastTime = millis();
+//in main, if(WiFi.status()== WL_CONNECTED) dan connect get
+void getRoad() {
+  HTTPClient http;
+  String serverPath = serverRoad + "?temperature=24.37";
+  http.begin(serverPath.c_str());
+  int httpResponseCode = http.GET();
+  if (httpResponseCode>0) {
+    String Roaddata = http.getString();
   }
+//  else {
+//error message
+//  }
 }
 
-/*to do: getstring verdelen in string straat, string dorp, string stad variabeles
-http give requests op een webserver?
+void getHouse() {
+  HTTPClient http;
+  String serverPath = serverHouse + "?temperature=24.37";
+  http.begin(serverPath.c_str());
+  int httpResponseCode = http.GET();
+  if (httpResponseCode>0) {
+    String Housedata = http.getString();
+  }
+//  else {
+//error message
+//  }
+}
 
-main aanpassen:
-loop:
-- http request vragen, http naar leds, leds aan, pins detecten, http put command sturen
+void getHex() {
+  HTTPClient http;
+  http.begin(serverHex.c_str());
+  // String serverPath = serverHex + "?temperature=24.37";
+  // http.begin(serverPath.c_str());
+  int httpResponseCode = http.GET();
+  if (httpResponseCode>0) {
+    String Hexdata = http.getString();
+  }
+//  else {
+//error message
+//  }
+}
 
-pins detecten:
-x en y = location
-if power(x) = true & power(y) = true 
-locationplayer = true
+void putRoad() {
+//get httppath = url/welke road bouwen serverHex + "/71"
+}
+
+void putHouse() {
+  
+}
+
+void putHex() {
+  
+}
+
+// void currentplayer() {
+//
+//}
 
 
+
+/*ToDo--------------
+- put commands af
+
+wellicht serverpath en server namen beslissen
+
+input aflezen door de pins. input opslaan als een cordinaat, type. set settlement/ set city, x en y
+
+main:  
+input aflezen en naar de server sturen
+output aflezen van de server
+leds werken
 */
-//notes en namen aanpassen <- laatste. 

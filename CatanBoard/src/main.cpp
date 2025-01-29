@@ -8,7 +8,7 @@ catanState state;
 void setup() {
   state = catanState();
   setupLeds(&state);
-  starthttps();
+  //starthttps();
 
   Serial.begin(9600);
 }
@@ -24,7 +24,7 @@ void setSurroundingCorners(byte cornerX, byte cornerY, byte p){
 
 void loop() {
   showPlayerLocations();
-  ServerGet();  //<- server lists pullen 
+  //ServerGet();  //<- server lists pullen 
 
   // Read serial input until a newline character is received
   if (Serial.available() > 0) {
@@ -69,5 +69,8 @@ void loop() {
     }
   }
 }
+
+//if error = true
+// knipper licht, restart game
 
 

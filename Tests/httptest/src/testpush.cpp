@@ -64,3 +64,4 @@ void loop() {
 
 //https put command
 //https://www.w3schools.com/tags/ref_httpmethods.asp#:~:text=The%20POST%20Method,Host%3A%20w3schools.com <-
+//https://github.com/microsoft/windows-universal-samples/tree/main/Samples/HttpClient

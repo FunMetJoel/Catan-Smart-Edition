@@ -2,6 +2,7 @@
 #include <Arduino.h>
 #include <FastLED.h>
 #include "catanState.h"
+#include "https.h"
 #include <string>
 
 #define NUM_LEDS 200
@@ -20,7 +21,7 @@ void setupLeds(catanState *pstate) {
     statePointer = pstate;
     setupPlayerLocationsLeds();
 }
-
+//filler V ?
 void setupPlayerLocationsLeds(){
     for (byte i = 0; i < NUM_LEDS; i++) {
         playerLocations[i] = &defaultPlayerLocation;
@@ -74,7 +75,7 @@ void setupPlayerLocationsLeds(){
     playerLocations[45] = &statePointer->getCorner(9,2)->player;
     playerLocations[46] = &statePointer->getEdge(8,4)->player;
 }
-
+//filler V
 void CoardinatesExplination() {
     for (byte i = 0; i < NUM_LEDS; i++) {
         leds[i] = CRGB::Black;
