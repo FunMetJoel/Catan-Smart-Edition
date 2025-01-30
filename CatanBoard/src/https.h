@@ -9,6 +9,7 @@ void getHouse();
 void getHex();
 void putRoad();
 void putHouse();
-void putHex();
+void putCity();
+void getCurrentPlayer();
 
 #endif // HTTPS_H

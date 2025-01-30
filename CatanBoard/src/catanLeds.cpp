@@ -154,3 +154,28 @@ void showPlayerLocations() {
 //         &statePointer->hexes[i].robber = hexdata[i * 2 + 1];
 //     }
 // }
+
+void errorlight() {
+    for (int i = 0; i < NUM_LEDS; i++) {
+        leds[i] = CRGB(0, 0, 255);
+    }
+    FastLED.show();
+    delay(2000);
+    for (int i = 0; i < NUM_LEDS; i++) {
+        leds[i] = CRGB(0, 0, 0);
+    }
+    FastLED.show();
+}
+
+void currentPlayerLight() {
+    CRGB currentPlayerLightList[4] = {CRGB::Red, CRGB::Blue, CRGB::Green, CRGB::Yellow};
+    int currentplayer = 1;
+    for (int i = 0; i < 4; i++) {
+        if (i = currentplayer) {
+            leds[NUM_LEDS + currentplayer] = currentPlayerLightList[currentplayer];
+        }
+        else {
+            leds[NUM_LEDS + i] = CRGB::Black;
+        }
+    }
+}
