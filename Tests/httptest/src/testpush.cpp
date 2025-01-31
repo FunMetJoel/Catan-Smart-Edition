@@ -49,19 +49,8 @@ void loop() {
       //http.setAuthorization("REPLACE_WITH_SERVER_USERNAME", "REPLACE_WITH_SERVER_PASSWORD");
       
       // Send HTTP GET request
-      int httpResponseCode = http.GET();
-      
-      if (httpResponseCode>0) {
-        Serial.print("HTTP Response code: ");
-        Serial.println(httpResponseCode);
-        String payload = http.getString();
-        Serial.println(payload);
-      }
-      else {
-        Serial.print("Error code: ");
-        Serial.println(httpResponseCode);
-      }
-      
+      int serverchange = "iwha 123";
+      http.PUT(serverchange);
       // Free resources
       http.end();
     }
@@ -71,3 +60,8 @@ void loop() {
     lastTime = millis();
   }
 }
+
+
+//https put command
+//https://www.w3schools.com/tags/ref_httpmethods.asp#:~:text=The%20POST%20Method,Host%3A%20w3schools.com <-
+//https://github.com/microsoft/windows-universal-samples/tree/main/Samples/HttpClient

@@ -1,14 +1,17 @@
 #include <Arduino.h>
 #include "catanLeds.h"
 #include "catanState.h"
+#include "https.h"
 
 catanState state;
 
 void setup() {
+  Serial.begin(9600);
+
   state = catanState();
   setupLeds(&state);
-
-  Serial.begin(9600);
+  //starthttps();
+  setupHttp();
 }
 
 void setSurroundingCorners(byte cornerX, byte cornerY, byte p){
@@ -22,7 +25,8 @@ void setSurroundingCorners(byte cornerX, byte cornerY, byte p){
 
 void loop() {
   showPlayerLocations();
-
+  //ServerGet();  //<- server lists pullen 
+  //getHex();
   // Read serial input until a newline character is received
   if (Serial.available() > 0) {
     String input = Serial.readStringUntil('\n');
@@ -66,5 +70,8 @@ void loop() {
     }
   }
 }
+
+//if error = true
+// knipper licht, restart game
 
 

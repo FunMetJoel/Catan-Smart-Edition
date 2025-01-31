@@ -2,6 +2,7 @@
 #include <Arduino.h>
 #include <FastLED.h>
 #include "catanState.h"
+#include "https.h"
 #include <string>
 
 #define NUM_LEDS 200
@@ -20,7 +21,7 @@ void setupLeds(catanState *pstate) {
     statePointer = pstate;
     setupPlayerLocationsLeds();
 }
-
+//filler V ?
 void setupPlayerLocationsLeds(){
     for (byte i = 0; i < NUM_LEDS; i++) {
         playerLocations[i] = &defaultPlayerLocation;
@@ -74,7 +75,7 @@ void setupPlayerLocationsLeds(){
     playerLocations[45] = &statePointer->getCorner(9,2)->player;
     playerLocations[46] = &statePointer->getEdge(8,4)->player;
 }
-
+//filler V
 void CoardinatesExplination() {
     for (byte i = 0; i < NUM_LEDS; i++) {
         leds[i] = CRGB::Black;
@@ -122,34 +123,59 @@ void showPlayerLocations() {
 //leds[i] = playerlocations[i]][level[i]
 //playerLocations[46] = &statePointer->corner(1)->player;
 
-void colordivider(){
-    CRGB PlayerColorsArray[4][2];
-    {Blue , Lightblue},
-    {Green , Lightgreen},
-    {Yellow, Orange},
-    {Red, Purple}  
+// void colordivider(){
+//     CRGB PlayerColorsArray[4][2];
+//     {Blue , Lightblue},
+//     {Green , Lightgreen},
+//     {Yellow, Orange},
+//     {Red, Purple}  
     
-    leds[i] = CRGB::PlayerColorArray[/*PLAYER in i*/][/*LEVEL in i*/];               /*this into showplayerlocation, this is wrong, no i use*/
+//     leds[i] = CRGB::PlayerColorArray[/*PLAYER in i*/][/*LEVEL in i*/];               /*this into showplayerlocation, this is wrong, no i use*/
+// }
+
+// void getroaddata() {
+//     for (int i = 0; i < 72; i++){
+//         &statePointer->edges[i].setPlayer(1);
+//     }
+// }
+// void gethousedata(){
+//     // Todo: Stuur http request om de data te krijgen
+//     // Returnt housedata
+
+//     //Loop door housedata
+//     for (int i = 0; i < 54; i++){
+//         &statePointer->corners[i].player = housedata[i * 2];
+//         &statePointer->corners[i].level = housedata[i * 2 + 1];
+//     }
+// }
+// void gethexdata(){
+//     for (int i = 0; i < 72; i++){
+//         &statePointer->hexes[i].resource = hexdata[i * 2];
+//         &statePointer->hexes[i].robber = hexdata[i * 2 + 1];
+//     }
+// }
+
+void errorlight() {
+    for (int i = 0; i < NUM_LEDS; i++) {
+        leds[i] = CRGB(0, 0, 255);
+    }
+    FastLED.show();
+    delay(2000);
+    for (int i = 0; i < NUM_LEDS; i++) {
+        leds[i] = CRGB(0, 0, 0);
+    }
+    FastLED.show();
 }
 
-void getroaddata() {
-    for (int i = 0; i < 72; i++){
-        &statePointer->edges[i].setPlayer(1);
-    }
-}
-void gethousedata(){
-    // Todo: Stuur http request om de data te krijgen
-    // Returnt housedata
-
-    //Loop door housedata
-    for (int i = 0; i < 54; i++){
-        &statePointer->corners[i].player = housedata[i * 2];
-        &statePointer->corners[i].level = housedata[i * 2 + 1];
-    }
-}
-void gethexdata(){
-    for (int i = 0; i < 72; i++){
-        &statePointer->hexes[i].resource = hexdata[i * 2];
-        &statePointer->hexes[i].robber = hexdata[i * 2 + 1];
+void currentPlayerLight() {
+    CRGB currentPlayerLightList[4] = {CRGB::Red, CRGB::Blue, CRGB::Green, CRGB::Yellow};
+    int currentplayer = 1;
+    for (int i = 0; i < 4; i++) {
+        if (i = currentplayer) {
+            leds[NUM_LEDS + currentplayer] = currentPlayerLightList[currentplayer];
+        }
+        else {
+            leds[NUM_LEDS + i] = CRGB::Black;
+        }
     }
 }
