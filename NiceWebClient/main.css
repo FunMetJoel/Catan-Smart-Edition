@@ -1,0 +1,187 @@
+html {
+    overflow: hidden;
+}
+
+body {
+    background-color: #ffeaa7;
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    /* images/water.png is background image  */
+    background-image: radial-gradient(circle, rgba(25, 80, 197, 0) 60%, rgba(6, 68, 148, 0.7) 100%), url('images/water.png');
+
+    height: 100vh;
+    overflow: hidden;
+}
+
+#gameCanvas {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    /* border-radius: 10px;
+    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2); */
+}
+
+#connectDiv {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 10px;
+    box-shadow: 20px 20px 20px 20px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    background-color: #55efc4;
+}
+
+h1 {
+    color: #2d3436;
+    align-items: center;
+    text-align: center;
+    margin-top: 0;
+}
+
+#connectDiv input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: none;
+}
+
+#connectDiv button {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: none;
+    background-color: #00b894;
+    color: #2d3436;
+    font-size: 16px;
+}
+
+#connectDiv button:hover {
+    background-color: #00cec9;
+    transform:translateY(-2px);
+}
+
+#connectDiv button:active {
+    background-color: #00b894;
+    transform:translateY(0);
+}
+
+#gameInfo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 10px;
+    background-color: #f2dd8b;
+    color: #2d3436;
+    border-radius: 0 0 20px 0;
+    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2);
+}
+
+#playerInfo {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+}
+#playerInfo > div {
+    margin: 10px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.circle {
+    /* circle */
+    margin: 1px;
+    border-radius: 50%;
+    background-color: #f2dd8b;
+    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.circle.points {
+    background-color: #f2dd8b;
+    color: #2d3436;
+    width: 40px;
+    height: 40px;
+}
+
+#player1 > .circle.points {
+    border: 5px solid red;
+}
+
+#player2 > .circle.points {
+    border: 5px solid green;
+}
+
+#player3 > .circle.points {
+    border: 5px solid blue;
+}
+
+#player4 > .circle.points {
+    border: 5px solid rgb(206, 206, 1);
+}
+
+
+.circle.wood {
+    background-color: #037f41;
+    color: #2d3436;
+}
+
+.circle.brick {
+    background-color: #dd5c48;
+    color: #2d3436;
+}
+
+.circle.sheep {
+    background-color: #3cc243;
+    color: #2d3436;
+}
+
+.circle.wheat {
+    background-color: #dbeb51;
+    color: #2d3436;
+}
+
+.circle.ore {
+    background-color: #9a99a5;
+    color: #2d3436;
+}
+
+
+#playerInfo > div > div > p {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    text-align: center;
+}
+
+.cards {
+    position: absolute;
+    bottom: 50px;
+    left: 0;
+    transform: translate(45px, 50px);
+    
+}
+
+.cards > img {
+    width: 100px;
+    margin: 0 -40px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2);
+    transition: transform 0.5s;
+    transform: translateY(40px);
+}
+
+.cards > img:hover {
+    transform: translateY(-20px);
+}

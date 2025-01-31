@@ -4,7 +4,7 @@ from flask_cors import CORS
 import catanData as Catan
 import compiledCordinateSystem as ccs
 
-from firstNN import firstNN
+from fourthNN import forthNN
 from firstTree import firstTreeBot
 import numpy as np
 import random
@@ -13,26 +13,48 @@ import torch
 
 app = flask.Flask(__name__)
 CORS(app)
-ai = firstTreeBot()
-# ai = firstNN()
-# ai.model.load_state_dict(torch.load("modelTest.pth"))
+tree = firstTreeBot()
+ai = forthNN()
+ai.model.load_state_dict(torch.load("src/bots/2025-01-10-22-41-47/model4NN-1.549-2025-01-10-22-41-47.pth"))
 
 catanGame = Catan.CatanState()
 
-# while catanGame.round < 2:
-#     ai.make_opening_move(catanGame)
-#     catanGame.endTurn()
+while catanGame.round < 2:
+    tree.make_opening_move(catanGame)
+    catanGame.endTurn()
         
 enforceRules = False
 
 users = []
 
+@app.route('/ping')
+def ping():
+    return flask.jsonify("pong")
+
 @app.route('/makeOpeningMove')
 def make_opening_move():
-    ai.make_opening_move(catanGame)
+    tree.make_opening_move(catanGame)
     catanGame.endTurn()
     
     return flask.jsonify(f"Opening Move Made")
+
+@app.route('/getCurrentPlayer')
+def get_current_player():
+    return flask.jsonify(catanGame.currentPlayer)
+
+@app.route('/resetGameIfOver')
+def reset_game_if_over():
+    global catanGame
+    if catanGame.points.max() >= 10:
+        catanGame = Catan.CatanState()
+        
+        while catanGame.round < 2:
+            tree.make_opening_move(catanGame)
+            catanGame.endTurn()
+        
+        return flask.jsonify("Game Reset")
+    else:
+        return flask.jsonify("Game Not Over")
 
 @app.route('/resetGame')
 def reset_game():
@@ -40,10 +62,22 @@ def reset_game():
     catanGame = Catan.CatanState()
     
     while catanGame.round < 2:
-        ai.make_opening_move(catanGame)
+        tree.make_opening_move(catanGame)
         catanGame.endTurn()
         
     return flask.jsonify("Game Reset")
+
+@app.route('/getAvailableActions')
+def get_available_actions():
+    actions = catanGame.getActionMask().tolist()
+    return flask.jsonify(actions)
+
+@app.route('/calculateLongestRoad')
+def calculate_longest_road():
+    lengts = []
+    for i in range(4):
+        lengts.append(catanGame.calculateLongestRoad(i))
+    return flask.jsonify(lengts)
 
 @app.route('/')
 def home():
@@ -118,6 +152,10 @@ def play_until_player(p):
 def get_materials(p):
     return flask.jsonify(catanGame.players[p-1].tolist())
 
+@app.route('/getPoints/<int:p>')
+def get_points(p):
+    return flask.jsonify(catanGame.points[p-1].item())
+
 @app.route('/trade/<int:give>/<int:get>')
 def trade(give, get):
     catanGame.tradeWithBank(give, get)
@@ -138,3 +176,4 @@ def RUN():
     
 if __name__ == '__main__':
     RUN()
+

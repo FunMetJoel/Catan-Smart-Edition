@@ -8,7 +8,7 @@ class backgroundWater extends CanvasObject {
     }
 
     draw(ctx, objectCenter, objectSize) {
-        ctx.drawImage(this.image, objectCenter.x - objectSize.x / 2, objectCenter.y - objectSize.y / 2, objectSize.x, objectSize.y);
+        //ctx.drawImage(this.image, objectCenter.x - objectSize.x / 2, objectCenter.y - objectSize.y / 2, objectSize.x, objectSize.y);
     }
 }
 
@@ -31,21 +31,21 @@ class Hex extends CanvasObject {
         super(px, py, sx, sy);
         this.hexCoords = {x: hexX, y: hexY};
         this.text = new TextObject(0, 0, 0.866, 0.15, hexX + ", " + hexY, "Arial", "#000000");
+        this.lastUpdateTimestamp = 0;
         this.addChild(
             this.text
         );
 
-        const imageUrls = ["images/bos.png", "images/brick.png", "images/shcaap.png", "images/graan.png", "images/steen.png", "images/rollOverlay.png"];
+        const imageUrls = ["images/bos.png", "images/brick.png", "images/graan.png", "images/shcaap.png", "images/steen.png", "images/rollOverlay.png"];
         this.images = []
         for (var i = 0; i < imageUrls.length; i++) {
             var image = new Image();
             image.src = imageUrls[i];
             this.images.push(image);
         }
-        console.log(this.images);
 
         this.overlayImage = new Image();
-        this.overlayImage.src = "images/rollOverlay.png";
+        this.overlayImage.src = "images/rollOverlay2.png";
 
         this.selected = false;
         this.recource = 1;
@@ -53,7 +53,7 @@ class Hex extends CanvasObject {
 
     draw(ctx, objectCenter, objectSize) {
         ctx.drawImage(this.images[this.recource], objectCenter.x - objectSize.x / 2, objectCenter.y - objectSize.y / 2, objectSize.x, objectSize.y);
-        if (this.selected) {
+        if (lastRoll == this.text.text) {
             ctx.drawImage(this.overlayImage, objectCenter.x - objectSize.x / 2, objectCenter.y - objectSize.y / 2, objectSize.x, objectSize.y);
         }
     }
@@ -66,11 +66,15 @@ class Hex extends CanvasObject {
     }
 
     update() {
-        getTileData(this.hexCoords.x, this.hexCoords.y)
-        .then(data => {
-            this.text.text = data.number;
-            this.recource = data.tile_type;
-        });
+        if (this.lastUpdateTimestamp != gameStartTimestamp) {
+            this.lastUpdateTimestamp = gameStartTimestamp;
+
+            getTileData(this.hexCoords.x, this.hexCoords.y)
+            .then(data => {
+                this.text.text = data.number;
+                this.recource = data.tile_type;
+            });
+        }
     }
 }
 
@@ -110,9 +114,9 @@ class Corner extends CanvasObject {
 
     draw(ctx, objectCenter, objectSize) {
         if (this.available) {
-            ctx.fillStyle = "#00FF00";
+            ctx.fillStyle = "#65ab77";
             ctx.beginPath();
-            ctx.arc(objectCenter.x, objectCenter.y, objectSize.x / 3, 0, 2 * Math.PI);
+            ctx.arc(objectCenter.x, objectCenter.y, objectSize.x / 4, 0, 2 * Math.PI);
             ctx.fill();
         }
         
@@ -136,17 +140,19 @@ class Corner extends CanvasObject {
     }
 
     onClick() {
-        console.log("clicked corner");
-        let newLevel = this.level + 1;
-        if (newLevel > 2) {
-            newLevel = 1;
+        if (this.level == 0) {
+            setSettlement(this.cornerX, this.cornerY)
+            .then(data => {
+                //game.updateObject()
+                updataAll()
+            })
+        }else if (this.level == 1) {
+            setCity(this.cornerX, this.cornerY)
+            .then(data => {
+                //game.updateObject()
+                updataAll()
+            })
         }
-        setSettlement(this.cornerX, this.cornerY, game.player, newLevel)
-        .then(data => {
-            //game.updateObject()
-            updataAll()
-        }
-        )
     }
 }
 
@@ -168,9 +174,9 @@ class Road extends CanvasObject {
 
     draw(ctx, objectCenter, objectSize) {
         if (this.available) {
-            ctx.fillStyle = "#00FF00";
+            ctx.fillStyle = "#65ab77";
             ctx.beginPath();
-            ctx.arc(objectCenter.x, objectCenter.y, objectSize.x / 3, 0, 2 * Math.PI);
+            ctx.arc(objectCenter.x, objectCenter.y, objectSize.x / 5, 0, 2 * Math.PI);
             ctx.fill();
         }
         if (this.player == 0) {
@@ -195,7 +201,7 @@ class Road extends CanvasObject {
 
     onClick() {
         //this.player = (this.player + 1) % 5;
-        setRoad(this.roadX, this.roadY, game.player)
+        setRoad(this.roadX, this.roadY)
         .then(data => {
             //game.updateObject()
             updataAll()

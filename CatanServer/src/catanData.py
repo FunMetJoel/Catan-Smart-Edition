@@ -12,16 +12,29 @@ class CatanState:
         
         self.currentPlayer = 0 # 0-3
         self.round = 0
+        self.playerWithLongestRoad = -1
+        self.lastRoll = 0
         
-        materials = [0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 4, 4, 4]
+        materials = [0, 0, 0, 0, # Wood
+                     1, 1, 1, # Brick
+                     2, 2, 2, 2, # Wheat
+                     3, 3, 3, 3, # Sheep
+                     4, 4, 4, # Ore
+                     5 # Desert
+                     ]
         random.shuffle(materials)
         for i in range(19):
             self.hexes[i][0] = materials[i]
             
-        diceRolls = [2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12, 0]
+        diceRolls = [2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12]
         random.shuffle(diceRolls)
+        hasdonedesert = 0
         for i in range(19):
-            self.hexes[i][1] = diceRolls[i]
+            if self.hexes[i][0] == 5:
+                self.hexes[i][1] = 0
+                hasdonedesert = 1
+            else:
+                self.hexes[i][1] = diceRolls[i - hasdonedesert]
             
     def setupRandomly(self):
         for i in range(4):
@@ -100,10 +113,13 @@ class CatanState:
             int: The sum of two random numbers between 1 and 6.
         """
         roll = random.randint(1, 6) + random.randint(1, 6)
-        
+
         if roll == 7:
             for p in self.players:
-                while sum(p) > 7:
+                startAmount = sum(p)
+                if startAmount <= 7:
+                    continue
+                while sum(p) > round(0.5*startAmount):
                     p[np.argmax(p)] -= 1
         
         for i in range(19):
@@ -113,7 +129,37 @@ class CatanState:
                     if corner[0] != 0:
                         self.players[corner[0]-1][self.hexes[i][0]] += corner[1]
                         
+        self.lastRoll = roll
+                        
         return roll
+    
+    def calculateLongestRoad(self, playerIndex) -> int:
+        """calculateLongestRoad returns the length of the longest road for the player.
+        
+        Args:
+            playerIndex (int): The index of the player.
+        
+        Returns:
+            int: The length of the longest road for the player.
+        """
+        def dfs(roadIndex, visited: set) -> int:
+            visited.add(roadIndex)
+            max_length = 0
+            for edgeIndex in compiledEdgeIndex.neighbourEdges[roadIndex]:
+                if edgeIndex == -1:
+                    continue
+                if edgeIndex not in visited and self.edges[edgeIndex][0] == playerIndex+1:
+                    max_length = max(max_length, dfs(edgeIndex, visited))
+            visited.remove(roadIndex)
+            return 1 + max_length
+
+        max_route = 0
+        for roadIndex in range(72):
+            if self.edges[roadIndex][0] == playerIndex+1:
+                max_route = max(max_route, dfs(roadIndex, set()))
+                
+        return max_route
+        
     
     def buildRoad(self, edgeIndex):
         """buildRoadAction is called when the player builds a road. It sets the player and hasRoad values of the edge.
@@ -127,6 +173,18 @@ class CatanState:
         if self.round >= 2:
             self.players[self.currentPlayer][0] -= 1
             self.players[self.currentPlayer][1] -= 1
+            
+        # calculate longest road
+        longestRoad = self.calculateLongestRoad(self.currentPlayer)
+        if longestRoad >= 5:
+            if self.playerWithLongestRoad != -1:
+                if longestRoad > self.calculateLongestRoad(self.playerWithLongestRoad):
+                    self.points[self.playerWithLongestRoad] -= 2
+                    self.playerWithLongestRoad = self.currentPlayer
+                    self.points[self.currentPlayer] += 2
+            else:
+                self.playerWithLongestRoad = self.currentPlayer
+                self.points[self.currentPlayer] += 2
         
         
     def buildSettlement(self, cornerIndex):
@@ -148,7 +206,7 @@ class CatanState:
         else:
             # give player materials 
             for hexIndex in compiledCornerIndex.neighbourHexes[cornerIndex]:
-                if hexIndex == -1:
+                if hexIndex == -1 or self.hexes[hexIndex][0] == 5:
                     continue
                 self.players[self.currentPlayer][self.hexes[hexIndex][0]] += 1
         
@@ -190,12 +248,31 @@ class CatanState:
         mask[1] = self.players[self.currentPlayer][0] > 0 and self.players[self.currentPlayer][1] > 0
         if mask[1]:
             mask[1] = self.getEdgeMask().any()
+        if mask[1]:
+            # count the number of roads from the player and check if < 15
+            mask[1] = sum(self.edges[:,0] == self.currentPlayer+1) < 15
         mask[2] = self.players[self.currentPlayer][0] > 0 and self.players[self.currentPlayer][1] > 0 and self.players[self.currentPlayer][2] > 0 and self.players[self.currentPlayer][3] > 0
         if mask[2]:
             mask[2] = self.getCornerMask().any()
+        if mask[2]:
+            # count the number of curoners where corner[i][0] == player and corner[i][1] == 1 and check if < 5 
+            curnersum = 0
+            for i in range(54):
+                if self.corners[i][0] == self.currentPlayer+1 and self.corners[i][1] == 1:
+                    curnersum += 1
+            mask[2] = curnersum < 5
+            
         mask[3] = self.players[self.currentPlayer][2] > 1 and self.players[self.currentPlayer][4] > 2
         if mask[3]:
             mask[3] = self.getCityMask().any()
+        if mask[3]:
+            # count the number of curoners where corner[i][0] == player and corner[i][1] == 2 and check if < 4
+            curnersum = 0
+            for i in range(54):
+                if self.corners[i][0] == self.currentPlayer+1 and self.corners[i][1] == 2:
+                    curnersum += 1
+            mask[3] = curnersum < 4
+       
         mask[4] = any(self.players[self.currentPlayer] > 4)
         
         return mask
@@ -229,13 +306,18 @@ class CatanState:
         else:
             for i in range(72):
                 if self.edges[i][0] == 0:
+                    
                     # mask[i] = True
                     for cornerIndex in compiledEdgeIndex.neighbourCorners[i]:
+                        if cornerIndex == -1:
+                            continue
                         if self.corners[cornerIndex][0] == playerIndex+1:
                             mask[i] = True
                             break
                     
                     for edgeIndex in compiledEdgeIndex.neighbourEdges[i]:
+                        if edgeIndex == -1:
+                            continue
                         if self.edges[edgeIndex][0] == playerIndex+1:
                             mask[i] = True
                             break
@@ -258,6 +340,8 @@ class CatanState:
                 if self.corners[i][0] != 0:
                     mask[i] = False
                     for cornerIndex in compiledCornerIndex.neighbourCorners[i]:
+                        if cornerIndex == -1:
+                            continue
                         mask[cornerIndex] = False
             
         else:
@@ -266,11 +350,15 @@ class CatanState:
             for i in range(54):
                 if self.corners[i][0] == 0:
                     for edgeIndex in compiledCornerIndex.neighbourEdges[i]:
+                        if edgeIndex == -1:
+                            continue
                         if self.edges[edgeIndex][0] == player+1:
                             mask[i] = True
                             break
                     
-                    for cornerIndex in compiledCornerIndex.neighbourCorners[i]:    
+                    for cornerIndex in compiledCornerIndex.neighbourCorners[i]: 
+                        if cornerIndex == -1:
+                            continue   
                         if self.corners[cornerIndex][0] != 0:
                             mask[i] = False
                             break

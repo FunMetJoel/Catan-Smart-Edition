@@ -22,7 +22,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 plt.ion()
 
-class thirdNN(abstractCatanBot.CatanBot):
+class forthNN(abstractCatanBot.CatanBot):
     def __init__(self, model:CatanAiModel):
         self.model = model
         self.model.to(device)
@@ -41,15 +41,19 @@ class thirdNN(abstractCatanBot.CatanBot):
         
     # @line_profiler.profile
     def interpret_state(self, game_state:catanData.CatanState):
-        hextensors = np.zeros((19, 21))
+        hextensors = np.zeros((19, 25))
         playertensor = np.zeros(5)
         
         
         for i in range(19):
             hex = game_state.hexes[i]
-            hextensors[i][0] = hex[0] # Resource
-            hextensors[i][1] = hex[1] # Dice roll
-            hextensors[i][2] = hex[2] # Has robber
+            hextensors[i][0] = (hex[0] == 0) # Resource wood
+            hextensors[i][1] = (hex[0] == 1) # Resource brick
+            hextensors[i][2] = (hex[0] == 2) # Resource wheat
+            hextensors[i][3] = (hex[0] == 3) # Resource sheep
+            hextensors[i][4] = (hex[0] == 4) # Resource ore
+            hextensors[i][5] = (6-abs(hex[1]-7))/36 # Dice roll chance
+            hextensors[i][6] = hex[2] # Has robber
             cornerInxexes = compiledHexIndex.neighbourCorners[i]
             corners = []
             for cornerIndex in cornerInxexes:
@@ -60,24 +64,24 @@ class thirdNN(abstractCatanBot.CatanBot):
             for edgeIndex in edgeIndexes:
                 edge = game_state.edges[edgeIndex]
                 edges.append(edge)
-            hextensors[i][3] = self.normalizePlayer(corners[0][0], game_state.currentPlayer)
-            hextensors[i][4] = corners[0][1]
-            hextensors[i][5] = self.normalizePlayer(corners[1][0], game_state.currentPlayer)
-            hextensors[i][6] = corners[1][1]
-            hextensors[i][7] = self.normalizePlayer(corners[2][0], game_state.currentPlayer)
-            hextensors[i][8] = corners[2][1]
-            hextensors[i][9] = self.normalizePlayer(corners[3][0], game_state.currentPlayer)
-            hextensors[i][10] = corners[3][1]
-            hextensors[i][11] = self.normalizePlayer(corners[4][0], game_state.currentPlayer)
-            hextensors[i][12] = corners[4][1]
-            hextensors[i][13] = self.normalizePlayer(corners[5][0], game_state.currentPlayer)
-            hextensors[i][14] = corners[5][1]
-            hextensors[i][15] = self.normalizePlayer(edges[0][0], game_state.currentPlayer)
-            hextensors[i][16] = self.normalizePlayer(edges[1][0], game_state.currentPlayer)
-            hextensors[i][17] = self.normalizePlayer(edges[2][0], game_state.currentPlayer)
-            hextensors[i][18] = self.normalizePlayer(edges[3][0], game_state.currentPlayer)
-            hextensors[i][19] = self.normalizePlayer(edges[4][0], game_state.currentPlayer)
-            hextensors[i][20] = self.normalizePlayer(edges[5][0], game_state.currentPlayer)            
+            hextensors[i][7] = self.normalizePlayer(corners[0][0], game_state.currentPlayer)
+            hextensors[i][8] = corners[0][1]
+            hextensors[i][9] = self.normalizePlayer(corners[1][0], game_state.currentPlayer)
+            hextensors[i][10] = corners[1][1]
+            hextensors[i][11] = self.normalizePlayer(corners[2][0], game_state.currentPlayer)
+            hextensors[i][12] = corners[2][1]
+            hextensors[i][13] = self.normalizePlayer(corners[3][0], game_state.currentPlayer)
+            hextensors[i][14] = corners[3][1]
+            hextensors[i][15] = self.normalizePlayer(corners[4][0], game_state.currentPlayer)
+            hextensors[i][16] = corners[4][1]
+            hextensors[i][17] = self.normalizePlayer(corners[5][0], game_state.currentPlayer)
+            hextensors[i][18] = corners[5][1]
+            hextensors[i][19] = self.normalizePlayer(edges[0][0], game_state.currentPlayer)
+            hextensors[i][20] = self.normalizePlayer(edges[1][0], game_state.currentPlayer)
+            hextensors[i][21] = self.normalizePlayer(edges[2][0], game_state.currentPlayer)
+            hextensors[i][22] = self.normalizePlayer(edges[3][0], game_state.currentPlayer)
+            hextensors[i][23] = self.normalizePlayer(edges[4][0], game_state.currentPlayer)
+            hextensors[i][24] = self.normalizePlayer(edges[5][0], game_state.currentPlayer)            
             
         
         for j in range(5):
@@ -123,13 +127,13 @@ class thirdNN(abstractCatanBot.CatanBot):
             settlements[~settlementMask] = -np.inf
             settlement = np.argmax(settlements)
             game_state.buildSettlement(settlement)
-            print("Build settlement (+1) at", settlement)
+            print("\t Build settlement (+1) at", settlement)
         elif actions == 3:
             cityMask = game_state.getCityMask()
             settlements[~cityMask] = -np.inf
             city = np.argmax(settlements)
             game_state.buildCity(city)
-            print("Build city (+2) at", city)
+            print("\t Build city (+2) at", city)
         elif actions == 4:
             tradeFor = np.argmax(tradefor)
             tradewidthMask = game_state.getTradeWithBankMask()
@@ -177,7 +181,7 @@ class CatanAiModel(nn.Module):
         # Define the heads for the 21-size input vectors
         self.hexes = nn.ModuleList([
             nn.Sequential(
-                nn.Linear(21, 64),
+                nn.Linear(25, 64),
                 nn.ReLU()
             ) for _ in range(19)
         ])
@@ -313,7 +317,6 @@ class CatanAiModel(nn.Module):
         
         return action, roads, settlements, tradeFor, tradeWith
     
-
 winnersPoints = []
 roundActions = []
 
@@ -323,7 +326,7 @@ def plot_durations(show_result=False):
         plt.title('Result')
     else:
         plt.clf()
-        plt.title(f'{startDateTime} - Training...')
+        plt.title(f'AI - Training...') # plt.title(f'{startDateTime} - Training...')
     plt.xlabel('Episode')
     plt.ylabel('winnersPoints')
     plt.plot(winnersPoints)
@@ -348,10 +351,10 @@ if __name__ == "__main__":
         
     startDateTime = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
         
-    bot = thirdNN()
-    bot.model.load_state_dict(torch.load("model3NN-2.7324489795918363-2025-01-01-15-06-25.pth"))#model3NN-NogsteedsLangHoog-2024-12-31-16-07-42.pth"))
+    bot = forthNN()
+    bot.model.load_state_dict(torch.load("src/bots/2025-01-10-22-41-47/model4NN-1.549-2025-01-10-22-41-47.pth"))
     
-    bots = [thirdNN(), thirdNN(), thirdNN(), thirdNN()]
+    bots = [forthNN(), forthNN(), forthNN(), forthNN()]
     
     for i in range(4):
         bots[i].model.load_state_dict(bot.model.state_dict())
@@ -377,8 +380,8 @@ if __name__ == "__main__":
             # print(game.currentPlayer, game.round)
             # print(game.players[game.currentPlayer])
             
-            if i % 100 == 0:
-                print("Actions:", i)
+            # if i % 100 == 0:
+            #     print("Actions:", i)
             
             if game.hasGameEnded():
                 roundActions.append(i/100)
@@ -399,7 +402,7 @@ if __name__ == "__main__":
             minActionMean = actionMeans[-1]
             if not os.path.exists(f"src/bots/{startDateTime}"):
                 os.makedirs(f"src/bots/{startDateTime}")
-            torch.save(bots[np.argmax(totalScore)].model.state_dict(), f"src/bots/{startDateTime}/model3NN-{minActionMean}-{startDateTime}.pth")
+            torch.save(bots[np.argmax(totalScore)].model.state_dict(), f"src/bots/{startDateTime}/model4NN-{minActionMean}-{startDateTime}.pth")
         
         print("Episode", episode, "Scores:", totalScore, "Winner:", np.argmax(game.points), "Points:", game.points[np.argmax(game.points)], "rounds:", game.round)
         
@@ -407,9 +410,11 @@ if __name__ == "__main__":
             bestBot = np.argmax(totalScore)
             secondBestBot = np.argsort(totalScore)[-2]
             print("Best bot:", bestBot,"Secondbest bot:", secondBestBot, "Scores:", totalScore)
-            torch.save(bots[bestBot].model.state_dict(), f"model3NN-{startDateTime}.pth")
+            # make directory if it doesn't exist
             
-            newBots:list[thirdNN] = [thirdNN(), thirdNN(), thirdNN(), thirdNN()]
+            torch.save(bots[bestBot].model.state_dict(), f"model4NN-{startDateTime}.pth")
+            
+            newBots:list[forthNN] = [forthNN(), forthNN(), forthNN(), forthNN()]
             newBots[0].model.load_state_dict(bots[bestBot].model.state_dict())
             newBots[1].model.load_state_dict(bots[secondBestBot].model.state_dict())
             newBots[2].model.load_state_dict(bots[bestBot].model.state_dict())

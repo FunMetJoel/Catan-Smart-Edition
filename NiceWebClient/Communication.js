@@ -1,19 +1,60 @@
-var serverURL = 'http://127.0.0.1:5000';//'http://100.65.118.41:5000';
+var serverURL = "";
+var gameStartTimestamp = 0;
+var lastRoll = 0;
 
-function checkIfConnected() {
-    fetch(`${serverURL}/ping`)
+function connectToServer(serverurl) {
+    
+    console.log("Connecting to server: " + serverurl);
+
+    fetch(`http://${serverurl}/ping`)
+    .then(response => response.json())
+    .then(
+        response => {
+            if (response == "pong") {
+                console.log("Connected to server: " + serverurl);
+
+                document.getElementById("connectDiv").style.display = "none";
+                serverURL = serverurl;
+
+            } else {
+                console.error("Failed to connect to server: " + serverurl);
+            }
+        }
+    )
+    .catch(error => {
+        console.error('Error fetching tile data:', error);
+    });
+
+}
+
+async function getGameStartTimestamp() {
+    return fetch(`http://${serverURL}/getGameStartTimestamp`)
     .then(response => response.json())
     .then(data => {
-        console.log(data);
+        // console.log(Date.now(), data);
+        gameStartTimestamp = data;
+        return data;
     })
     .catch(error => {
         console.error('Error fetching tile data:', error);
     });
 }
-// setInterval(checkIfConnected, 5000);
+
+async function getLastRoll() {
+    return fetch(`http://${serverURL}/getLastRoll`)
+    .then(response => response.json())
+    .then(data => {
+        // console.log(data);
+        lastRoll = data;
+        return data;
+    })
+    .catch(error => {
+        console.error('Error fetching tile data:', error);
+    });
+}
 
 async function getRoadsData() {
-    return fetch(`${serverURL}/getRoads`)
+    return fetch(`http://${serverURL}/getRoads`)
     .then(response => response.json())
     .then(data => {
         // console.log(data);
@@ -25,7 +66,7 @@ async function getRoadsData() {
 }
 
 async function getTileData(x, y) {
-    return fetch(`${serverURL}/getTile/${x}/${y}`)
+    return fetch(`http://${serverURL}/getTile/${x}/${y}`)
     .then(response => response.json())
     .then(data => {
         // console.log(data);
@@ -36,8 +77,8 @@ async function getTileData(x, y) {
     });
 }
 
-async function setRoad(x, y, player) {
-    return fetch(`${serverURL}/setRoad/${x}/${y}/${player}`)
+async function setRoad(x, y) {
+    return fetch(`http://${serverURL}/setRoad/${x}/${y}`)
     .then(response => response.json())
     .then(data => {
         // console.log(data);
@@ -49,7 +90,7 @@ async function setRoad(x, y, player) {
 }
 
 async function setSettlement(x, y) {
-    return fetch(`${serverURL}/setSettlement/${x}/${y}/0/1`)
+    return fetch(`http://${serverURL}/setSettlement/${x}/${y}`)
     .then(response => response.json())
     .then(data => {
         // console.log(data);
@@ -60,8 +101,20 @@ async function setSettlement(x, y) {
     });
 }
 
+async function setCity(x, y) {
+    return fetch(`http://${serverURL}/setCity/${x}/${y}`)
+    .then(response => response.json())
+    .then(data => {
+        // console.log(data);
+        return data;
+    })
+    .catch(error => {
+        console.error('Error setting city:', error);
+    });
+}
+
 async function getSettlementData() {
-    return fetch(`${serverURL}/getSettlements`)
+    return fetch(`http://${serverURL}/getSettlements`)
     .then(response => response.json())
     .then(data => {
         // console.log(data);
@@ -73,7 +126,7 @@ async function getSettlementData() {
 }
 
 async function getRoadAvailability(p) {
-    return fetch(`${serverURL}/getPossibleRoads/${p}`)
+    return fetch(`http://${serverURL}/getPossibleRoads/${p}`)
     .then(response => response.json())
     .then(data => {
         // console.log(data);
@@ -85,7 +138,7 @@ async function getRoadAvailability(p) {
 }
 
 async function getSettlementAvailability(p) {
-    return fetch(`${serverURL}/getPossibleSettlements/${p}`)
+    return fetch(`http://${serverURL}/getPossibleSettlements/${p}`)
     .then(response => response.json())
     .then(data => {
         // console.log(data);
@@ -97,7 +150,7 @@ async function getSettlementAvailability(p) {
 }
 
 async function getMaterials(p) {
-    return fetch(`${serverURL}/getMaterials/${p}`)
+    return fetch(`http://${serverURL}/getMaterials/${p}`)
     .then(response => response.json())
     .then(data => {
         // console.log(data);
@@ -109,7 +162,7 @@ async function getMaterials(p) {
 }
 
 async function getPoints(p) {
-    return fetch(`${serverURL}/getPoints/${p}`)
+    return fetch(`http://${serverURL}/getPoints/${p}`)
     .then(response => response.json())
     .then(data => {
         // console.log(data);
@@ -121,7 +174,7 @@ async function getPoints(p) {
 }
 
 async function endTurn() {
-    return fetch(`${serverURL}/endTurn`)
+    return fetch(`http://${serverURL}/endTurn`)
     .then(response => response.json())
     .then(data => {
         // console.log(data);
@@ -133,7 +186,7 @@ async function endTurn() {
 }
 
 async function playUntill(p) {
-    return fetch(`${serverURL}/playUntilPlayer/${p}`)
+    return fetch(`http://${serverURL}/playUntilPlayer/${p}`)
     .then(response => response.json())
     .then(data => {
         // console.log(data);
@@ -145,7 +198,7 @@ async function playUntill(p) {
 }
 
 async function aiPlay() {
-    return fetch(`${serverURL}/makeAIMove`)
+    return fetch(`http://${serverURL}/makeAIMove`)
     .then(response => response.json())
     .then(data => {
         // console.log(data);
@@ -157,7 +210,7 @@ async function aiPlay() {
 }
 
 async function getCurrentPlayer() {
-    return fetch(`${serverURL}/getCurrentPlayer`)
+    return fetch(`http://${serverURL}/getCurrentPlayer`)
     .then(response => response.json())
     .then(data => {
         // console.log(data);
@@ -169,7 +222,7 @@ async function getCurrentPlayer() {
 }
 
 async function resetGameIfOver() {
-    return fetch(`${serverURL}/resetGameIfOver`)
+    return fetch(`http://${serverURL}/resetGameIfOver`)
     .then(response => response.json())
     .then(data => {
         // console.log(data);

@@ -5,8 +5,8 @@ from compiledCordinateSystem import compiledCornerIndex, compiledEdgeIndex, comp
 
 import abstractCatanBot as acb
 from catanData import CatanState
-import logging
-logging.basicConfig(level=logging.DEBUG)
+# import logging
+# logging.basicConfig(level=logging.DEBUG)
 
 import matplotlib.pyplot as plt
 
@@ -32,16 +32,19 @@ class firstTreeBot(acb.CatanBot):
                     if j == -1:
                         continue
                     chanceToRoll = (6-abs(game_state.hexes[j][1].item()-7))/36
+                    if game_state.hexes[j][0] == 5:
+                        continue
                     materialCovarage[game_state.hexes[j][0]] += chanceToRoll * game_state.corners[i][1].item() # * game_state.hexes[j][2] # TODO: Kijken of deze hier moet
         
         
         # +1 bonus for each material and +amountperroll
         for i in range(5):
             if materialCovarage[i] > 0:
-                stateScore += 1
-            stateScore += materialCovarage[i] * 36
+                stateScore += 10
+            stateScore += materialCovarage[i] * 100
                 
         materials = game_state.players[game_state.currentPlayer]
+
         # +5 for being able to build a settlement
         if materials[0] >= 1 and materials[1] >= 1 and materials[2] >= 1 and materials[3] >= 1:
             stateScore += 5
@@ -54,11 +57,12 @@ class firstTreeBot(acb.CatanBot):
         if materials[0] >= 1 and materials[1] >= 1:
             stateScore += 1
             
-        # +5 for having a place to build a settlement
-        cornerMask = game_state.getCornerMask(game_state.currentPlayer)
-        for i in range(54):
-            if cornerMask[i]:
-                stateScore += 5         
+        # +5 for having a place to build a settlement if round > 2
+        if game_state.round > 2:
+            cornerMask = game_state.getCornerMask(game_state.currentPlayer)
+            for i in range(54):
+                if cornerMask[i]:
+                    stateScore += 5    
         
         return stateScore
     
@@ -145,14 +149,19 @@ class firstTreeBot(acb.CatanBot):
         # take the best action
         action = possbleActions[0][0]
         if action[0] == 0:
+            print(" End turn")
             return game_state.endTurn()
         elif action[0] == 1:
+            print(" Build road")
             return game_state.buildRoad(action[1])
         elif action[0] == 2:
+            print(" Build settlement")
             return game_state.buildSettlement(action[1])
         elif action[0] == 3:
+            print(" Build city")
             return game_state.buildCity(action[1])
         elif action[0] == 4:
+            print(" Trade")
             return game_state.tradeWithBank(action[1][0], action[1][1])   
         
     
@@ -201,7 +210,7 @@ def plot_durations(show_result=False):
         plt.title('Result')
     else:
         plt.clf()
-        plt.title('Training...')
+        plt.title('Tree simulating...')
     plt.xlabel('Episode')
     plt.ylabel('winnersPoints')
     plt.plot(winnersPoints)
@@ -242,4 +251,3 @@ if __name__ == "__main__":
             plot_durations()
             
             
-        

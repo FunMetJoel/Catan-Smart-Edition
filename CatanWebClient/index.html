@@ -44,24 +44,112 @@
         });
     </script>
 
-    <p>
-        Wood: <span id="wood">0</span><br>
-        Brick: <span id="brick">0</span><br>
-        Wheat: <span id="wheat">0</span><br>
-        Sheep: <span id="sheep">0</span><br>
-        Ore: <span id="ore">0</span><br>
-    </p>
+    <input type="checkbox" id="autoPlay">
+    <script>
+        game.autoPlay = false;
+        document.getElementById("autoPlay").addEventListener("change", function() {
+            game.autoPlay = document.getElementById("autoPlay").checked;
+        });
+
+        function autoPlay() {
+            if (game.autoPlay) {
+                aiPlay();
+                updataAll();
+                getCurrentPlayer().then(player => {
+                    game.player = player+1;
+                    document.getElementById("playerSelect").value = player+1;
+                });
+                resetGameIfOver();
+            }
+        }
+        setInterval(autoPlay, 250);
+    </script>
+
+    <div id="playersInfo" style="display: flex; gap:5%;">
+        <p>
+            <strong>Player 1: <span id="points1">?</span>P</strong><br>
+            Wood: <span id="wood1">0</span><br>
+            Brick: <span id="brick1">0</span><br>
+            Wheat: <span id="wheat1">0</span><br>
+            Sheep: <span id="sheep1">0</span><br>
+            Ore: <span id="ore1">0</span><br>
+        </p>
+        <p>
+            <strong>Player 2: <span id="points2">?</span>P</strong><br>
+            Wood: <span id="wood2">0</span><br>
+            Brick: <span id="brick2">0</span><br>
+            Wheat: <span id="wheat2">0</span><br>
+            Sheep: <span id="sheep2">0</span><br>
+            Ore: <span id="ore2">0</span><br>
+        </p>
+        <p>
+            <strong>Player 3: <span id="points3">?</span>P</strong><br>
+            Wood: <span id="wood3">0</span><br>
+            Brick: <span id="brick3">0</span><br>
+            Wheat: <span id="wheat3">0</span><br>
+            Sheep: <span id="sheep3">0</span><br>
+            Ore: <span id="ore3">0</span><br>
+        </p>
+        <p>
+            <strong>Player 4: <span id="points4">?</span>P</strong><br>
+            Wood: <span id="wood4">0</span><br>
+            Brick: <span id="brick4">0</span><br>
+            Wheat: <span id="wheat4">0</span><br>
+            Sheep: <span id="sheep4">0</span><br>
+            Ore: <span id="ore4">0</span><br>
+        </p>
+    </div>
 
     <script>
         function updataAll() {
             game.updateObject();
-            getMaterials(game.player)
+            getMaterials(1)
             .then(materials => {
-                document.getElementById("wood").innerText = materials[0];
-                document.getElementById("brick").innerText = materials[1];
-                document.getElementById("sheep").innerText = materials[2];
-                document.getElementById("wheat").innerText = materials[3];
-                document.getElementById("ore").innerText = materials[4];
+                document.getElementById("wood1").innerText = materials[0];
+                document.getElementById("brick1").innerText = materials[1];
+                document.getElementById("sheep1").innerText = materials[2];
+                document.getElementById("wheat1").innerText = materials[3];
+                document.getElementById("ore1").innerText = materials[4];
+            });
+            getMaterials(2)
+            .then(materials => {
+                document.getElementById("wood2").innerText = materials[0];
+                document.getElementById("brick2").innerText = materials[1];
+                document.getElementById("sheep2").innerText = materials[2];
+                document.getElementById("wheat2").innerText = materials[3];
+                document.getElementById("ore2").innerText = materials[4];
+            });
+            getMaterials(3)
+            .then(materials => {
+                document.getElementById("wood3").innerText = materials[0];
+                document.getElementById("brick3").innerText = materials[1];
+                document.getElementById("sheep3").innerText = materials[2];
+                document.getElementById("wheat3").innerText = materials[3];
+                document.getElementById("ore3").innerText = materials[4];
+            });
+            getMaterials(4)
+            .then(materials => {
+                document.getElementById("wood4").innerText = materials[0];
+                document.getElementById("brick4").innerText = materials[1];
+                document.getElementById("sheep4").innerText = materials[2];
+                document.getElementById("wheat4").innerText = materials[3];
+                document.getElementById("ore4").innerText = materials[4];
+            });
+            getPoints(1)
+            .then(points => {
+                document.getElementById("points1").innerText = points;
+            });
+            getPoints(2)
+            .then(points => {
+                document.getElementById("points2").innerText = points;
+            });
+            getPoints(3)
+            .then(points => {
+                document.getElementById("points3").innerText = points;
+            });
+            getPoints(4)
+            .then(points => {
+                document.getElementById("points4").innerText = points;
             });
         }
     </script>
@@ -69,7 +157,7 @@
     <script>
         function endTurnAndPlay() {
             endTurn(game.player).then(() => {
-                playUntill(game.player-1);
+                //playUntill(game.player-1);
                 updataAll();
             });
         }
