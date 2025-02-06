@@ -1,18 +1,33 @@
+/*----------------------------------/please read below\-----------------------------------------------------------
+| Copyright (C) 2025 'team joël' - All Rights Reserved                                                             |
+| You may not use, distribute and modify this code unless stated.                                                  |
+| Failuire to comply will result in a | Class A Action Lawssuit |                                                  |
+| under the federal Copyright infringement program.                                                                |
+| Any questions may be directed to : www.idontcare@bouwtyouropinion.gmail.com :                                    |
+-----------------------------------------------------------------------------------------------------------------*/
 #include <Arduino.h>
 #include "catanLeds.h"
 #include "catanState.h"
 #include "https.h"
 
 catanState state;
+bool error = false;
 
 void setup() {
   Serial.begin(9600);
-
   state = catanState();
   setupLeds(&state);
-  //starthttps();
   setupHttp();
 }
+
+
+
+void loop() {
+
+}
+
+
+
 
 void setSurroundingCorners(byte cornerX, byte cornerY, byte p){
   for (byte i = 0; i < 3; i++){
@@ -71,7 +86,9 @@ void loop() {
   }
 }
 
-//if error = true
-// knipper licht, restart game
+void errorcheck() {
+  if (error = true){
+    errorLight();
 
-
+  }
+}

@@ -155,7 +155,7 @@ void showPlayerLocations() {
 //     }
 // }
 
-void errorlight() {
+void errorLight() {
     for (int i = 0; i < NUM_LEDS; i++) {
         leds[i] = CRGB(0, 0, 255);
     }
@@ -178,4 +178,8 @@ void currentPlayerLight() {
             leds[NUM_LEDS + i] = CRGB::Black;
         }
     }
+}
+
+void winnerLight() {
+    
 }
