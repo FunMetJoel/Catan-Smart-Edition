@@ -23,7 +23,7 @@ void setup() {
 
 
 void loop() {
-
+  
 }
 
 
@@ -89,6 +89,7 @@ void loop() {
 void errorcheck() {
   if (error = true){
     errorLight();
-
+    delay(1000);
+    setup();    
   }
 }
