@@ -133,11 +133,13 @@ void showPlayerLocations() {
 //     leds[i] = CRGB::PlayerColorArray[/*PLAYER in i*/][/*LEVEL in i*/];               /*this into showplayerlocation, this is wrong, no i use*/
 // }
 
-// void getroaddata() {
-//     for (int i = 0; i < 72; i++){
-//         &statePointer->edges[i].setPlayer(1);
-//     }
-// }
+
+// V gedaan V
+void getroaddata() {
+    for (int i = 0; i < 72; i++){
+        &statePointer->edges[i].setPlayer(1);
+    }
+}
 // void gethousedata(){
 //     // Todo: Stuur http request om de data te krijgen
 //     // Returnt housedata

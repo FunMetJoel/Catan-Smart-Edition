@@ -27,6 +27,9 @@ void loop() {
     
     //getdata
 
+    //pushinput
+
+    //lights
   }
   else {
     errorLight();

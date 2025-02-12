@@ -19,11 +19,9 @@ void setupHttp() {
 
   WiFi.begin(ssid, password);
   if(WiFi.status() != WL_CONNECTED) {
-    bool wificonnect = true;
-    Serial.println("Connected");
+    bool wificonnect = true; //<-deze kan weg
 
-  }
-//    licht effecten?? knipper lichies    
+  }   
   else {
     error = true;
   }
@@ -49,10 +47,14 @@ void getHouse() {
   int httpResponseCode = http.GET();
   if (httpResponseCode>0) {
     String Housedata = http.getString();
+    for (int i = 0; i < 54; i++){
+      &statePointer->corners[i].player = Housedata[i * 2];
+      &statePointer->corners[i].level = Housedata[i * 2 + 1];
+    }
   }
-//  else {
-//error message
-//  }
+  else {
+    error = true
+  }
 }
 
 void getHex() {
@@ -85,7 +87,7 @@ void putHouse() {
   int httpResponseCode = 0;
   while (httpResponseCode <= 0) {
     HTTPClient http;
-    String serverHexPutPath = serverHex.c_str() +  //number; //<- 
+    String serverHexPutPath = serverHouse.c_str() +  //number; //<- 
     http.begin(serverHexPutPath.c_str());
     int httpResponseCode = http.GET();
   }
@@ -96,7 +98,7 @@ void putCity() {
   int httpResponseCode = 0;
   while (httpResponseCode <= 0) {
     HTTPClient http;
-    String serverCityPutPath = serverHex.c_str() +  //number; //<- 
+    String serverCityPutPath = serverCity.c_str() +  //number; //<- 
     http.begin(serverCityPutPath.c_str());
     int httpResponseCode = http.GET();
   }
