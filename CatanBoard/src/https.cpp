@@ -29,21 +29,22 @@ void setupHttp() {
 
 void getRoad() {
   HTTPClient http;
-  String serverPath = serverRoad + "?temperature=24.37";
-  http.begin(serverPath.c_str());
+  http.begin(serverRoad.c_str());
   int httpResponseCode = http.GET();
   if (httpResponseCode>0) {
     String Roaddata = http.getString();
+    for (int i = 0; i < 72; i++){
+      &statePointer->edges[i].setPlayer(1);
+    }
   }
-//  else {
-//error message
-//  }
+  else {
+    error = true;
+  }
 }
 
 void getHouse() {
   HTTPClient http;
-  String serverPath = serverHouse + "?temperature=24.37";
-  http.begin(serverPath.c_str());
+  http.begin(serverHouse.c_str());
   int httpResponseCode = http.GET();
   if (httpResponseCode>0) {
     String Housedata = http.getString();
@@ -53,23 +54,24 @@ void getHouse() {
     }
   }
   else {
-    error = true
+    error = true;
   }
 }
 
 void getHex() {
   HTTPClient http;
-  Serial.println(serverHex.c_str());
   http.begin(serverHex.c_str());
-  // String serverPath = serverHex + "?temperature=24.37";
-  // http.begin(serverPath.c_str());
   int httpResponseCode = http.GET();
   if (httpResponseCode>0) {
     String Hexdata = http.getString();
+    for (int i = 0; i < 72; i++){
+      &statePointer->hexes[i].resource = hexdata[i * 2];
+      &statePointer->hexes[i].robber = hexdata[i * 2 + 1];
+    }
   }
-//  else {
-//error message
-//  }
+ else {
+  error = true;
+  }
 }
 
 void putRoad() {
@@ -111,6 +113,7 @@ void getCurrentPlayer() {
   if (httpResponseCode>0) {
     String currentPlayer = http.getString(); 
   }
+  // current player = welke aan de beurt is 
 }
 
 
@@ -129,14 +132,9 @@ output aflezen van de server
 leds werken
 
 
+if info hex =/ hexdata = special error?
 
-main: while (error = false) {
 
-}
-else {
-  error()
-  restart
-}
 
 string naar array
 */
