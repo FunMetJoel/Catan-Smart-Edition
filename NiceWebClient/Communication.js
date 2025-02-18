@@ -232,3 +232,15 @@ async function resetGameIfOver() {
         console.error('Error resetting game:', error);
     });
 }
+
+async function getRobberData() {
+    return fetch(`http://${serverURL}/getRobberData`)
+    .then(response => response.json())
+    .then(data => {
+        // console.log(data);
+        return data;
+    })
+    .catch(error => {
+        console.error('Error getting robber data:', error);
+    });
+}

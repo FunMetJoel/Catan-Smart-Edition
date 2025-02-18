@@ -125,7 +125,7 @@
 
 
     <button id="connectButton" onclick="updataAll()">Update</button>
-    <button id="endTurnButton" onclick="endTurnAndPlay()">End Turn</button>
+    <button id="endTurnButton" onclick="endTurn()">End Turn</button>
 
     <select id="playerSelect">
         <option value="0">NoPlayer</option>
@@ -164,8 +164,8 @@
             .then(materials => {
                 document.getElementById("wood1").innerText = materials[0];
                 document.getElementById("brick1").innerText = materials[1];
-                document.getElementById("sheep1").innerText = materials[2];
-                document.getElementById("wheat1").innerText = materials[3];
+                document.getElementById("wheat1").innerText = materials[2];
+                document.getElementById("sheep1").innerText = materials[3];
                 document.getElementById("ore1").innerText = materials[4];
 
                 // remove cards if there are more than needed
@@ -183,13 +183,13 @@
                         }else{
                             materialcards[1] += 1;
                         }
-                    } else if (document.getElementById("player1Cards").children[i].alt == "sheep") {
+                    } else if (document.getElementById("player1Cards").children[i].alt == "wheat") {
                         if (materialcards[2] == materials[2]) {
                             document.getElementById("player1Cards").children[i].remove();
                         }else{
                             materialcards[2] += 1;
                         }
-                    } else if (document.getElementById("player1Cards").children[i].alt == "wheat") {
+                    } else if (document.getElementById("player1Cards").children[i].alt == "sheep") {
                         if (materialcards[3] == materials[3]) {
                             document.getElementById("player1Cards").children[i].remove();
                         }else{
@@ -208,8 +208,8 @@
                 cardImages = [
                     "images/boskaart.png",
                     "images/brikkaart.png",
-                    "images/schaapkaart.png",
                     "images/graankaart.png",
+                    "images/schaapkaart.png",
                     "images/steenkaart.png"
                 ]
 
@@ -218,7 +218,7 @@
                     for (let j = 0; j < materials[i] - materialcards[i]; j++) {
                         var img = document.createElement("img");
                         img.src = cardImages[i];
-                        img.alt = ["wood", "brick", "sheep", "wheat", "ore"][i];
+                        img.alt = ["wood", "brick", "wheat", "sheep", "ore"][i];
                         img.onclick = function() {trade(1, i)};
 
                         document.getElementById("player1Cards").insertBefore(img, document.getElementById("player1Cards").children[materialstartindex+1]);
@@ -233,24 +233,24 @@
             .then(materials => {
                 document.getElementById("wood2").innerText = materials[0];
                 document.getElementById("brick2").innerText = materials[1];
-                document.getElementById("sheep2").innerText = materials[2];
-                document.getElementById("wheat2").innerText = materials[3];
+                document.getElementById("wheat2").innerText = materials[2];
+                document.getElementById("sheep2").innerText = materials[3];
                 document.getElementById("ore2").innerText = materials[4];
             });
             getMaterials(3)
             .then(materials => {
                 document.getElementById("wood3").innerText = materials[0];
                 document.getElementById("brick3").innerText = materials[1];
-                document.getElementById("sheep3").innerText = materials[2];
-                document.getElementById("wheat3").innerText = materials[3];
+                document.getElementById("wheat3").innerText = materials[2];
+                document.getElementById("sheep3").innerText = materials[3];
                 document.getElementById("ore3").innerText = materials[4];
             });
             getMaterials(4)
             .then(materials => {
                 document.getElementById("wood4").innerText = materials[0];
                 document.getElementById("brick4").innerText = materials[1];
-                document.getElementById("sheep4").innerText = materials[2];
-                document.getElementById("wheat4").innerText = materials[3];
+                document.getElementById("wheat4").innerText = materials[2];
+                document.getElementById("sheep4").innerText = materials[3];
                 document.getElementById("ore4").innerText = materials[4];
             });
             getPoints(1)

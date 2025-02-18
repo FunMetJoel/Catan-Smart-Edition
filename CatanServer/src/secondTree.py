@@ -10,10 +10,11 @@ from catanData import CatanState
 
 import matplotlib.pyplot as plt
 
-class firstTreeBot(acb.CatanBot):
+class secondTreeBot(acb.CatanBot):
     def __init__(self):
-        self.name = "firstTreeBot"
+        self.name = "secondTreeBot"
         self.tree = []
+        self.possabilityCount = 0
         
     def interpretState(self, game_state: CatanState):
         stateScore = 0
@@ -65,7 +66,93 @@ class firstTreeBot(acb.CatanBot):
                     stateScore += 5    
         
         return stateScore
-    
+        
+    def getActionTree(self, game_state: CatanState, order=0, depth=0, history=""):
+        '''Returns a list of possible actions with their following actions or score
+        '''
+        
+        actionMask = game_state.getActionMask()
+        # actionMask[0] is end turn
+        # actionMask[1] is build road
+        # actionMask[2] is build settlement
+        # actionMask[3] is build
+        
+        possbleActions = []
+        # possbleActions is a list of lists
+        # (action, followingActions) or (action, score) if end turn
+        # action is a tuple of the action and the arguments (actionIndex, arguments)
+        # score is the score of the action
+                
+        if (depth >= 5):
+            score = self.interpretState(game_state)
+            possbleActions.append([(0, None), score])
+            return possbleActions
+        
+        if actionMask[0]:
+            score = self.interpretState(game_state)
+            possbleActions.append([(0, None), score])
+            
+            # print(f"{'-'*(depth+1)}End: {score}")
+            print(f"   {history} End: {score}")
+            self.possabilityCount += 1
+            
+        if actionMask[1] and order <= 1:
+            edgeMask:np.array = game_state.getEdgeMask(game_state.currentPlayer)
+            for i in range(72):
+                if not edgeMask[i]:
+                    continue
+                    
+                newGameState = game_state.copy()
+                newGameState.buildRoad(i)
+                
+                possbleActions.append([(1, i), self.getActionTree(newGameState, 1, depth+1, history + "R")])
+                
+                # print(f"{'-'*(depth+1)}Road: {i}")
+        
+        if actionMask[2] and order <= 2:
+            cornerMask:np.array = game_state.getCornerMask(game_state.currentPlayer)
+            for i in range(54):
+                if not cornerMask[i]:
+                    continue
+                    
+                newGameState = game_state.copy()
+                newGameState.buildSettlement(i)
+                
+                possbleActions.append([(2, i), self.getActionTree(newGameState, 2, depth+1, history + "S")])
+                
+                # print(f"{'-'*(depth+1)}Settlement: {i}")
+                
+        if actionMask[3] and order <= 3:
+            cityMask:np.array = game_state.getCityMask(game_state.currentPlayer)
+            for i in range(54):
+                if not cityMask[i]:
+                    continue
+                    
+                newGameState = game_state.copy()
+                newGameState.buildCity(i)
+                
+                possbleActions.append([(3, i), self.getActionTree(newGameState, 3, depth+1, history + "C")])
+                
+                # print(f"{'-'*(depth+1)}City: {i}\n")
+                
+        if actionMask[4] and order == 0:
+            tradeMask:np.array = game_state.getTradeWithBankMask(game_state.currentPlayer)
+            for i in range(5):
+                if not tradeMask[i]:
+                    continue
+                for j in range(5):
+                    if i == j:
+                        continue
+                        
+                    newGameState = game_state.copy()
+                    newGameState.tradeWithBank(i, j)
+                    
+                    possbleActions.append([(4, (i, j)), self.getActionTree(newGameState, 0, depth+1, history + "T")])
+                    
+                    # print(f"{'-'*(depth+1)}Trade: {i} for {j}")
+                    
+        return possbleActions
+        
     def getPossibleActions(self, game_state: CatanState):
         actionMask = game_state.getActionMask()
         # actionMask[0] is end turn
@@ -132,14 +219,36 @@ class firstTreeBot(acb.CatanBot):
         return possbleActions
     
     def getBestAction(self, game_state: CatanState):
-        possbleActions = self.getPossibleActions(game_state)
-        
+        self.possabilityCount = 0
+        actionTree = self.getActionTree(game_state)
+        print("Got action tree", self.possabilityCount)
+
+        for action in actionTree:
+            action[1] = self.getHighestScoreRecursive(action)
+        print("Got action scores")
+
         # sort possbleActions by score
-        possbleActions.sort(key=lambda x: x[1], reverse=True)
-        
+        actionTree.sort(key=lambda x: x[1], reverse=True)
+        print("Got highest scores")
+                
         # take the best action
-        return possbleActions[0][0]
+        return actionTree[0][0]
     
+    def getHighestScoreRecursive(self, list):
+        # possbleActions is a list of lists
+        # (action, followingActions) or (action, score) if end turn
+        # action is a tuple of the action and the arguments (actionIndex, arguments)
+        # score is the score of the action
+        
+        if type(list[1]) == int or type(list[1]) == float or type(list[1]) == np.int64 or type(list[1]) == np.float64:
+            return list[1]
+        
+        highestScore = 0
+        for action in list[1]:
+            highestScore = max(highestScore, self.getHighestScoreRecursive(action))
+                
+        return highestScore
+            
     def moveRobber(self, game_state: CatanState):
         possibleActions = []
         for i in range(19):
@@ -157,13 +266,15 @@ class firstTreeBot(acb.CatanBot):
         if game_state.canMoveRobber:
             self.moveRobber(game_state)
         
-        possbleActions = self.getPossibleActions(game_state)
+        # possbleActions = self.getPossibleActions(game_state)
         
-        # sort possbleActions by score
-        possbleActions.sort(key=lambda x: x[1], reverse=True)
+        # # sort possbleActions by score
+        # possbleActions.sort(key=lambda x: x[1], reverse=True)
+        
+        bestMove = self.getBestAction(game_state)
         
         # take the best action
-        action = possbleActions[0][0]
+        action = bestMove
         if action[0] == 0:
             print(" End turn")
             return game_state.endTurn()
@@ -237,7 +348,7 @@ def plot_durations(show_result=False):
      
 if __name__ == "__main__":
     plt.ion()
-    bot = firstTreeBot()
+    bot = secondTreeBot()
 
     gameCount = 0
     while True:

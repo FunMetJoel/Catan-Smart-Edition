@@ -26,17 +26,37 @@ class backgroundMap extends CanvasObject {
     }
 }
 
+class robber extends CanvasObject {
+    constructor(px, py, sx, sy) {
+        super(px, py, sx, sy);
+
+        // preload image
+        this.image = new Image();
+        this.image.src = "images/robber.svg";
+    }
+
+    draw(ctx, objectCenter, objectSize) {
+        ctx.drawImage(this.image, objectCenter.x - objectSize.x / 2, objectCenter.y - objectSize.y / 2, objectSize.x, objectSize.y);
+    }
+
+}
+
 class Hex extends CanvasObject {
     constructor(px, py, sx, sy, hexX, hexY) {
         super(px, py, sx, sy);
         this.hexCoords = {x: hexX, y: hexY};
+        this.robber = new robber(0.325, 0, 0.3, 0.3);
+        this.addChild(
+            this.robber
+        );
+
         this.text = new TextObject(0, 0, 0.866, 0.15, hexX + ", " + hexY, "Arial", "#000000");
         this.lastUpdateTimestamp = 0;
         this.addChild(
             this.text
         );
 
-        const imageUrls = ["images/bos.png", "images/brick.png", "images/graan.png", "images/shcaap.png", "images/steen.png", "images/rollOverlay.png"];
+        const imageUrls = ["images/bos.png", "images/brick.png", "images/graan.png", "images/shcaap.png", "images/steen.png", "images/woestijn.png"];
         this.images = []
         for (var i = 0; i < imageUrls.length; i++) {
             var image = new Image();
@@ -71,7 +91,11 @@ class Hex extends CanvasObject {
 
             getTileData(this.hexCoords.x, this.hexCoords.y)
             .then(data => {
-                this.text.text = data.number;
+                if (data.number == 0) {
+                    this.text.text = "";
+                } else {
+                    this.text.text = data.number;
+                }
                 this.recource = data.tile_type;
             });
         }
@@ -338,6 +362,17 @@ class CatanWebClient extends ObjectCanvas {
             for (var i = 0; i < this.corners.length; i++) {
                 this.corners[i].player = data[i * 2];
                 this.corners[i].level = data[i * 2 + 1];
+            }
+        });
+
+        getRobberData()
+        .then(data => {
+            for (var i = 0; i < this.hexes.length; i++) {
+                if (data[i] == 1) {
+                    this.hexes[i].robber.hidden = false;
+                }else {
+                    this.hexes[i].robber.hidden = true;
+                }
             }
         });
 

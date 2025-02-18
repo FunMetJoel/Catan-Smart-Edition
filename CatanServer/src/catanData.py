@@ -1,6 +1,6 @@
 import numpy as np
 import random
-from compiledCordinateSystem import compiledHexIndex, compiledEdgeIndex, compiledCornerIndex
+from compiledCordinateSystem import compiledHexIndex, compiledEdgeIndex, compiledCornerIndex, portCorners
 
 class CatanState:
     def __init__(self):
@@ -9,11 +9,15 @@ class CatanState:
         self.corners = np.zeros((54, 2), dtype=int) # 54 corners, 3 values per corner: player, level
         self.players = np.zeros((4, 5), dtype=int) # 4 players, 5 values per player: Wood, Brick, Wheat, Sheep, Ore
         self.points = np.zeros(4, dtype=int) # 4 players, 1 value per player: points
+        self.ports = np.zeros(9, dtype=int) # 9 ports, 1 value per port: resource
+        self.ontwikkelingskaarten = np.zeros((4, 5), dtype=int) # 5 values per player: ridder, overwinningpunt, monopolie, stratenbouwer, uitvinding
         
         self.currentPlayer = 0 # 0-3
         self.round = 0
         self.playerWithLongestRoad = -1
         self.lastRoll = 0
+        
+        self.canMoveRobber = False
         
         materials = [0, 0, 0, 0, # Wood
                      1, 1, 1, # Brick
@@ -22,6 +26,8 @@ class CatanState:
                      4, 4, 4, # Ore
                      5 # Desert
                      ]
+        
+        # materials = 18 * [2] + [5]
         random.shuffle(materials)
         for i in range(19):
             self.hexes[i][0] = materials[i]
@@ -31,10 +37,16 @@ class CatanState:
         hasdonedesert = 0
         for i in range(19):
             if self.hexes[i][0] == 5:
-                self.hexes[i][1] = 0
+                self.hexes[i][1] = 0 # dice roll
+                self.hexes[i][2] = 1 # hasRobber
                 hasdonedesert = 1
             else:
                 self.hexes[i][1] = diceRolls[i - hasdonedesert]
+                
+        portOptions = [0, 1, 2, 3, 4, 5, 5, 5, 5]
+        random.shuffle(portOptions)
+        for i in range(9):
+            self.ports[i] = portOptions[i]
             
     def setupRandomly(self):
         for i in range(4):
@@ -89,6 +101,7 @@ class CatanState:
     def endTurn(self):
         """endTurnAction is called when the player ends their turn. It increments the currentPlayer and the round.
         """
+        self.canMoveRobber = False
         if self.round == 0:
             self.currentPlayer = (self.currentPlayer + 1) % 4
             if self.currentPlayer == 0:
@@ -115,6 +128,18 @@ class CatanState:
         roll = random.randint(1, 6) + random.randint(1, 6)
 
         if roll == 7:
+            
+            # maby make it not be random
+            # newRobberHex = np.random.randint(19)
+            # for i in range(19):
+            #     self.hexes[i][2] = 0
+                
+            #     if i == newRobberHex:
+            #         self.hexes[i][2] = 1
+            
+            self.canMoveRobber = True
+            
+            
             for p in self.players:
                 startAmount = sum(p)
                 if startAmount <= 7:
@@ -132,6 +157,17 @@ class CatanState:
         self.lastRoll = roll
                         
         return roll
+    
+    def moveRobber(self, hexIndex):
+        """moveRobberAction is called when the player moves the robber. It sets the hasRobber value of the hex.
+        
+        Args:
+            hexIndex (int): The index of the hex to move the robber to.
+        """
+        for i in range(19):
+            self.hexes[i][2] = 0
+            if i == hexIndex:
+                self.hexes[i][2] = 1
     
     def calculateLongestRoad(self, playerIndex) -> int:
         """calculateLongestRoad returns the length of the longest road for the player.
@@ -226,6 +262,78 @@ class CatanState:
         
         self.points[self.currentPlayer] += 1
         
+    def buyDevelopmentCard(self):
+        """buyDevelopmentCardAction is called when the player buys a development card. It gives the player a random development card.
+        """
+        self.players[self.currentPlayer][2] -= 1
+        self.players[self.currentPlayer][3] -= 1
+        self.players[self.currentPlayer][4] -= 1
+        
+        posibleCards = [
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, # ridder
+            1, 1, 1, 1, 1, # overwinningpunt
+            2, 2, # monopolie
+            3, 3, # stratenbouwer
+            4, 4 # uitvinding
+        ]
+        card = random.choice(posibleCards)
+        
+        self.players[self.currentPlayer][card] += 1
+        
+        
+    def playDevelopmentCard(self, cardIndex, param):
+        """playDevelopmentCardAction is called when the player plays a development card. It removes the card from the player.
+        
+        Args:
+            cardIndex (int): The index of the card to play.
+        """
+        self.ontwikkelingskaarten[self.currentPlayer][cardIndex] -= 1
+        
+        if cardIndex == 0: # ridder
+            self.canMoveRobber = True
+        elif cardIndex == 1: # overwinningpunt
+            self.points[self.currentPlayer] += 1
+        elif cardIndex == 2: # monopolie
+            for i in range(4):
+                if i == self.currentPlayer:
+                    continue
+                self.players[self.currentPlayer][param] += self.players[i][param]
+                self.players[i][param] = 0
+        elif cardIndex == 3: # stratenbouwer
+            self.players[self.currentPlayer][0] += 2
+            self.players[self.currentPlayer][1] += 2
+        elif cardIndex == 4: # uitvinding
+            self.players[self.currentPlayer][param] += 2
+            
+    def getTradeRatios(self, playerIndex) -> np.array:
+        """getTradeRatios returns the trade ratios of the player.
+        
+        Args:
+            playerIndex (int): The index of the player.
+        
+        Returns:
+            np.array: The trade ratios of the player.
+        """
+        ratios = np.zeros(5, dtype=int)
+        
+        ratios[0] = 4
+        ratios[1] = 4
+        ratios[2] = 4
+        ratios[3] = 4
+        ratios[4] = 4
+        
+        for i in range(9):
+            for j in portCorners[i]:
+                if self.corners[j][0] == playerIndex+1:
+                    if self.ports[i] == 5:
+                        for k in range(5):
+                            if ratios[k] > 3:
+                                ratios[k] = 3
+                    else:
+                        ratios[self.ports[i]] = 2
+        
+        return ratios
+        
     def tradeWithBank(self, give, receive):
         """tradeWithBankAction is called when the player trades with the bank. It exchanges the give materials for the receive materials.
         
@@ -233,7 +341,9 @@ class CatanState:
             give (int): The index of the material to give.
             receive (int): The index of the material to receive.
         """
-        self.players[self.currentPlayer][give] -= 4
+        racios = self.getTradeRatios(self.currentPlayer)
+        
+        self.players[self.currentPlayer][give] -= racios[give]
         self.players[self.currentPlayer][receive] += 1
     
     def getActionMask(self) -> np.array:

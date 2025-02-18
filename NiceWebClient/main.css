@@ -185,3 +185,7 @@ h1 {
 .cards > img:hover {
     transform: translateY(-20px);
 }
+
+#endTurnButton {
+    position: absolute;
+}
