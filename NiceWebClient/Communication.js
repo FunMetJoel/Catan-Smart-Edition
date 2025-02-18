@@ -244,3 +244,15 @@ async function getRobberData() {
         console.error('Error getting robber data:', error);
     });
 }
+
+async function trade(give, get) {
+    return fetch(`http://${serverURL}/trade/${give}/${get}`)
+    .then(response => response.json())
+    .then(data => {
+        // console.log(data);
+        return data;
+    })
+    .catch(error => {
+        console.error('Error trading:', error);
+    });
+}

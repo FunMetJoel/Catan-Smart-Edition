@@ -188,4 +188,66 @@ h1 {
 
 #endTurnButton {
     position: absolute;
+    top: 50%;
+    left: 5px;
+}
+
+#endTurnButton {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #2d3436;
+    background-color: #f2dd8b;
+    color: #2d3436;
+    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2);
+}
+
+#endTurnButton:hover {
+    background-color: #f2dd8b;
+    transform: translateY(-2px);
+}
+
+#endTurnButton:active {
+    background-color: #f2dd8b;
+    transform: translateY(0);
+}
+
+#trade {
+    /* right bottom */
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    padding: 10px;
+    background-color: #f2dd8b;
+    border-radius: 20px 0 0 0px;
+    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2);
+
+    display: flex;
+    flex-direction: column;
+}
+
+#trade > button {
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: none;
+    background-color: #00b894;
+    color: #2d3436;
+    font-size: 16px;
+}
+
+#trade > button:hover {
+    background-color: #00cec9;
+    transform: translateY(-2px);
+}
+
+#trade > button:active {
+    background-color: #00b894;
+    transform: translateY(0);
+}
+
+#trade > select {
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: none;
 }

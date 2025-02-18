@@ -33,10 +33,10 @@
     </div>
 
     <div class="cards" id="player1Cards">
-        <img src="images/boskaart.png" alt="wood" id="wood1Card" onclick="trade(1, 0)">
-        <img src="images/boskaart.png" alt="wood" id="wood1Card" onclick="trade(1, 0)">
-        <img src="images/boskaart.png" alt="wood" id="wood1Card" onclick="trade(1, 0)">
-        <img src="images/boskaart.png" alt="wood" id="wood1Card" onclick="trade(1, 0)">
+        <img src="images/boskaart.png" alt="wood" id="wood1Card" >
+        <img src="images/boskaart.png" alt="wood" id="wood1Card" >
+        <img src="images/boskaart.png" alt="wood" id="wood1Card" >
+        <img src="images/boskaart.png" alt="wood" id="wood1Card" >
     </div>
 
     <div id="playerInfo">
@@ -122,6 +122,28 @@
         </div>
         
     </div>
+
+    <div id="trade">
+        <h1>Trade</h1>
+        <label for="tradeGive">Give:</label>
+        <select id="tradeGive">
+            <option value="0">Wood</option>
+            <option value="1">Brick</option>
+            <option value="2">Wheat</option>
+            <option value="3">Sheep</option>
+            <option value="4">Ore</option>
+        </select>
+        <label for="tradeReceive">Receive:</label>
+        <select id="tradeReceive">
+            <option value="0">Wood</option>
+            <option value="1">Brick</option>
+            <option value="2">Wheat</option>
+            <option value="3">Sheep</option>
+            <option value="4">Ore</option>
+        </select>
+        <button id="tradeButton" onclick="trade(document.getElementById('tradeGive').value, document.getElementById('tradeReceive').value)">Trade</button>
+    </div>
+
 
 
     <button id="connectButton" onclick="updataAll()">Update</button>
@@ -219,7 +241,6 @@
                         var img = document.createElement("img");
                         img.src = cardImages[i];
                         img.alt = ["wood", "brick", "wheat", "sheep", "ore"][i];
-                        img.onclick = function() {trade(1, i)};
 
                         document.getElementById("player1Cards").insertBefore(img, document.getElementById("player1Cards").children[materialstartindex+1]);
                     }
