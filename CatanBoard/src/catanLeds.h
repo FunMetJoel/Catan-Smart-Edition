@@ -11,5 +11,6 @@ void setupLeds(catanState *pstate);
 void setupPlayerLocationsLeds();
 void showPlayerLocations();
 void CoardinatesExplination();
+void errorLight();
 
 #endif // CATANLEDS_H

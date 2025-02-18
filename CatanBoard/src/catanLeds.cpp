@@ -133,29 +133,15 @@ void showPlayerLocations() {
 //     leds[i] = CRGB::PlayerColorArray[/*PLAYER in i*/][/*LEVEL in i*/];               /*this into showplayerlocation, this is wrong, no i use*/
 // }
 
-// void getroaddata() {
-//     for (int i = 0; i < 72; i++){
-//         &statePointer->edges[i].setPlayer(1);
-//     }
-// }
-// void gethousedata(){
-//     // Todo: Stuur http request om de data te krijgen
-//     // Returnt housedata
 
-//     //Loop door housedata
-//     for (int i = 0; i < 54; i++){
-//         &statePointer->corners[i].player = housedata[i * 2];
-//         &statePointer->corners[i].level = housedata[i * 2 + 1];
-//     }
-// }
-// void gethexdata(){
-//     for (int i = 0; i < 72; i++){
-//         &statePointer->hexes[i].resource = hexdata[i * 2];
-//         &statePointer->hexes[i].robber = hexdata[i * 2 + 1];
-//     }
-// }
+// V gedaan V
+void getroaddata() {
+    for (int i = 0; i < 72; i++){
+        &statePointer->edges[i].setPlayer(1);
+    }
+}
 
-void errorlight() {
+void errorLight() {
     for (int i = 0; i < NUM_LEDS; i++) {
         leds[i] = CRGB(0, 0, 255);
     }
@@ -170,12 +156,22 @@ void errorlight() {
 void currentPlayerLight() {
     CRGB currentPlayerLightList[4] = {CRGB::Red, CRGB::Blue, CRGB::Green, CRGB::Yellow};
     int currentplayer = 1;
+    if (currentplayer > 4) {
+        winnerLight() 
+    }
+    currentplayer =- 1
     for (int i = 0; i < 4; i++) {
+        
+        
         if (i = currentplayer) {
-            leds[NUM_LEDS + currentplayer] = currentPlayerLightList[currentplayer];
+            leds[NUM_LEDS + i] = currentPlayerLightList[i];
         }
         else {
             leds[NUM_LEDS + i] = CRGB::Black;
         }
     }
+}
+
+void winnerLight() {
+    
 }
