@@ -23,7 +23,7 @@ void setup() {
 
 
 void loop() {
-  while(error = false) {
+  if (error = false) {
     
     //getdata
 

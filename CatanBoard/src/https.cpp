@@ -47,10 +47,10 @@ void getHouse() {
   http.begin(serverHouse.c_str());
   int httpResponseCode = http.GET();
   if (httpResponseCode>0) {
-    String Housedata = http.getString();
+    String houseData = http.getString();
     for (int i = 0; i < 54; i++){
-      &statePointer->corners[i].player = Housedata[i * 2];
-      &statePointer->corners[i].level = Housedata[i * 2 + 1];
+      &statePointer->corners[i].player = houseData[i * 2];
+      &statePointer->corners[i].level = houseData[i * 2 + 1];
     }
   }
   else {
@@ -63,10 +63,10 @@ void getHex() {
   http.begin(serverHex.c_str());
   int httpResponseCode = http.GET();
   if (httpResponseCode>0) {
-    String Hexdata = http.getString();
+    String hexData = http.getString();
     for (int i = 0; i < 72; i++){
-      &statePointer->hexes[i].resource = hexdata[i * 2];
-      &statePointer->hexes[i].robber = hexdata[i * 2 + 1];
+      &statePointer->hexes[i].resource = hexData[i * 2];
+      &statePointer->hexes[i].robber = hexData[i * 2 + 1];
     }
   }
  else {

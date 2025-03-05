@@ -120,18 +120,18 @@ void showPlayerLocations() {
     FastLED.show();
 }
 
-//leds[i] = playerlocations[i]][level[i]
-//playerLocations[46] = &statePointer->corner(1)->player;
+// leds[i] = playerlocations[i]level[i]
+// playerLocations[46] = &statePointer->corner(1)->player;
 
-// void colordivider(){
-//     CRGB PlayerColorsArray[4][2];
-//     {Blue , Lightblue},
-//     {Green , Lightgreen},
-//     {Yellow, Orange},
-//     {Red, Purple}  
+void colordivider(){
+    CRGB PlayerColorsArray[4][2];
+    {Blue , Lightblue},
+    {Green , Lightgreen},
+    {Yellow, Orange},
+    {Red, Purple}  
     
-//     leds[i] = CRGB::PlayerColorArray[/*PLAYER in i*/][/*LEVEL in i*/];               /*this into showplayerlocation, this is wrong, no i use*/
-// }
+    leds[i] = CRGB::PlayerColorArray[/*PLAYER in i*/][/*LEVEL in i*/];               /*this into showplayerlocation, this is wrong, no i use*/
+}
 
 
 // V gedaan V
@@ -157,11 +157,10 @@ void currentPlayerLight() {
     CRGB currentPlayerLightList[4] = {CRGB::Red, CRGB::Blue, CRGB::Green, CRGB::Yellow};
     int currentplayer = 1;
     if (currentplayer > 4) {
-        winnerLight() 
+        winnerLight(); 
     }
-    currentplayer =- 1
+    currentplayer =- 1;
     for (int i = 0; i < 4; i++) {
-        
         
         if (i = currentplayer) {
             leds[NUM_LEDS + i] = currentPlayerLightList[i];
@@ -173,5 +172,7 @@ void currentPlayerLight() {
 }
 
 void winnerLight() {
-    
+    for (int i = 0; i < NUM_LEDS; i++) {
+        leds[i] = CRGB(0, 255, 0);
+    }       
 }
