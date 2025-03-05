@@ -352,7 +352,7 @@ if __name__ == "__main__":
     startDateTime = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
         
     bot = forthNN()
-    bot.model.load_state_dict(torch.load("src/bots/2025-01-10-22-41-47/model4NN-1.549-2025-01-10-22-41-47.pth"))
+    bot.model.load_state_dict(torch.load("D:/AIModels-Catan/2025-01-10-22-41-47/model4NN-1.549-2025-01-10-22-41-47.pth"))
     
     bots = [forthNN(), forthNN(), forthNN(), forthNN()]
     

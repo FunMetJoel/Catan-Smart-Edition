@@ -12,24 +12,25 @@ import datetime as dt
 import time
 import threading
 import logging
+import csv
 
 import catanData as Catan
 import compiledCordinateSystem as ccs
 import firstTree as firstTreeBot
-
-
+import secondTree as secondTreeBot
 
 catanGame = Catan.CatanState()
 
 players = [
-    ('bot', firstTreeBot.firstTreeBot()),
-    ('bot', firstTreeBot.firstTreeBot()),
-    ('bot', firstTreeBot.firstTreeBot()),
-    ('bot', firstTreeBot.firstTreeBot()),
     # ('player', '127.0.0.1'),
     # ('player', '127.0.0.1'),
     # ('player', '127.0.0.1'),
-    # ('player', '127.0.0.1')
+    # ('player', '127.0.0.1'),
+    ('bot', firstTreeBot.firstTreeBot()),
+    ('bot', firstTreeBot.firstTreeBot()),
+    ('bot', firstTreeBot.firstTreeBot()),
+    # ('bot', firstTreeBot.firstTreeBot()),
+    ('bot', secondTreeBot.secondTreeBot()),
 ]
 CardsOpen = False
 
@@ -37,12 +38,20 @@ lastMoveTimestamp = 0
 gameStartTimestamp = 0
 
 tree = firstTreeBot.firstTreeBot()
+secondTree = secondTreeBot.secondTreeBot()
 
 def mainloop():
     global catanGame
     global players
     global lastMoveTimestamp
     global gameStartTimestamp
+    
+    serverStartTime = dt.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+    with open(f'gameData-{serverStartTime}.csv', mode='w') as file:
+        writer = csv.writer(file)
+        writer.writerow(['WinningPlayer', 'GameStart', 'GameEnd', 'p1Points', 'p2Points', 'p3Points', 'p4Points'])
+    
+    
     setupBoard()
     lastPlayer = -1
     while True:
@@ -56,9 +65,14 @@ def mainloop():
         else:
             pass
         
-        time.sleep(0.25)
+        #time.sleep(0.25)
         
         if catanGame.points.max() >= 10:
+            # save game data
+            with open(f'gameData-{serverStartTime}.csv', mode='a') as file:
+                writer = csv.writer(file)
+                writer.writerow([catanGame.points.argmax()+1, gameStartTimestamp, dt.datetime.now(), catanGame.points[0], catanGame.points[1], catanGame.points[2], catanGame.points[3]])
+            
             setupBoard()
             
         if (dt.datetime.now() - lastMoveTimestamp).seconds > 60:
@@ -78,6 +92,9 @@ def setupBoard():
         
     lastMoveTimestamp = dt.datetime.now()
     gameStartTimestamp = dt.datetime.now()
+    
+    # for i in range(54):
+    #     catanGame.corners[i][0] = 1
     
     
 app = flask.Flask(__name__)
@@ -105,7 +122,6 @@ def checkIfAllowedRoute(player, ip, isGet):
     
     return False
     
-    
 ###################
 # algemene routes #
 ###################
@@ -121,6 +137,35 @@ def get_ip():
 @app.route('/getGameStartTimestamp')
 def get_game_start_timestamp():
     return flask.jsonify(gameStartTimestamp.timestamp())
+
+@app.route('/getActionTree')
+def get_action_tree():
+    actionTree = secondTree.getActionTree(catanGame)
+    
+    bestAction = secondTree.getBestAction(catanGame)
+    print(f"Best action: {bestAction}")
+    
+    stringActionTree = recursiveMakeStringTree(actionTree)
+    print(stringActionTree)
+    
+    return stringActionTree #flask.jsonify(actionTree)
+
+def recursiveMakeStringTree(tree, depth=0):
+    stringTree = ""
+    for action in tree:
+        if action[0][0] == 0:
+            stringTree += f"{' - '*depth}{action[0][0]}: <strong>{action[1]}</strong> <br>"
+        else:
+            stringTree += f"{' - '*depth}{action[0][0]}: {action[0][1]} <br>"
+        if type(action[1]) == list:
+            stringTree += recursiveMakeStringTree(action[1], depth+1)
+    return stringTree
+
+@app.route('/giveCard/<int:p>/<int:c>')
+def give_card(p, c):
+    catanGame.players[p][c] += 1
+    
+    return flask.jsonify("Card Given")
 
 #################
 # viewer routes #
@@ -160,8 +205,16 @@ def get_tile(x, y):
 def get_last_roll():
     return flask.jsonify(catanGame.lastRoll)
 
-
-
+@app.route('/getRobberData')
+def get_robber():
+    data = []
+    for i in range(19):
+        if catanGame.hexes[i][2]:
+            data.append(1)
+        else:
+            data.append(0)
+            
+    return flask.jsonify(data)
 
 @app.route('/makeOpeningMove')
 def make_opening_move():
@@ -170,6 +223,9 @@ def make_opening_move():
     
     return flask.jsonify(f"Opening Move Made")
 
+@app.route('/getTradeRasios')
+def get_trade_rasios():
+    return flask.jsonify(catanGame.getTradeRatios(catanGame.currentPlayer).tolist())
 
 
 @app.route('/resetGameIfOver')

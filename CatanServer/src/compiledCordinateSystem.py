@@ -140,3 +140,16 @@ class CompiledCornerIndex:
 compiledHexIndex:CompiledHexIndex = CompiledHexIndex()
 compiledEdgeIndex = CompiledEdgeIndex()
 compiledCornerIndex = CompiledCornerIndex()
+
+# what corners each port is connected to
+portCorners = [
+    compiledEdgeIndex.neighbourCorners[compiledEdgeIndex.calcEdgeIndex(0, 0)],
+    compiledEdgeIndex.neighbourCorners[compiledEdgeIndex.calcEdgeIndex(3, 0)],
+    compiledEdgeIndex.neighbourCorners[compiledEdgeIndex.calcEdgeIndex(7, 2)],
+    compiledEdgeIndex.neighbourCorners[compiledEdgeIndex.calcEdgeIndex(0, 3)],
+    compiledEdgeIndex.neighbourCorners[compiledEdgeIndex.calcEdgeIndex(10, 5)],
+    compiledEdgeIndex.neighbourCorners[compiledEdgeIndex.calcEdgeIndex(2, 7)],
+    compiledEdgeIndex.neighbourCorners[compiledEdgeIndex.calcEdgeIndex(10, 8)],
+    compiledEdgeIndex.neighbourCorners[compiledEdgeIndex.calcEdgeIndex(5, 10)],
+    compiledEdgeIndex.neighbourCorners[compiledEdgeIndex.calcEdgeIndex(8, 10)]
+]
