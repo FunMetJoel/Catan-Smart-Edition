@@ -5,14 +5,15 @@
 #include <HTTPClient.h>
 
 bool error = false;
-// put function declarations here:
 const char* ssid = "Klinki";
 const char* password = "KlinkiSnek";
+catanState *statePointer;
 
 String serverRoad = "http://192.168.1.35:5000";
 String serverHouse = "http://192.168.1.35:5000"; //even van jowel vragen
 String serverHex = "http://192.168.1.35:5000";
 String serverCity = "http://192.168.1.35:5000";
+
 
 
 void setupHttp() {
@@ -32,9 +33,9 @@ void getRoad() {
   http.begin(serverRoad.c_str());
   int httpResponseCode = http.GET();
   if (httpResponseCode>0) {
-    String Roaddata = http.getString();
+    String roadData = http.getString();
     for (int i = 0; i < 72; i++){
-      &statePointer->edges[i].setPlayer(1);
+      &statePointer->edges[i].setPlayer() = roadData[i];
     }
   }
   else {
@@ -79,7 +80,7 @@ void putRoad() {
   int httpResponseCode = 0;
   while (httpResponseCode <= 0) {
     HTTPClient http;
-    String serverHexPutPath = serverHex.c_str() +  //number; //<- 
+    String serverHexPutPath = serverHex.c_str(); //+  //number; //<- 
     http.begin(serverHexPutPath.c_str());
     int httpResponseCode = http.GET();
   }
@@ -89,7 +90,7 @@ void putHouse() {
   int httpResponseCode = 0;
   while (httpResponseCode <= 0) {
     HTTPClient http;
-    String serverHexPutPath = serverHouse.c_str() +  //number; //<- 
+    String serverHexPutPath = serverHouse.c_str(); //+  //number; //<- 
     http.begin(serverHexPutPath.c_str());
     int httpResponseCode = http.GET();
   }
@@ -100,18 +101,18 @@ void putCity() {
   int httpResponseCode = 0;
   while (httpResponseCode <= 0) {
     HTTPClient http;
-    String serverCityPutPath = serverCity.c_str() +  //number; //<- 
+    String serverCityPutPath = serverCity.c_str(); //+  //number; //<- 
     http.begin(serverCityPutPath.c_str());
     int httpResponseCode = http.GET();
   }
 }
 
-void getCurrentPlayer() {
+void getCurrentPlayer(String currentPlayer) {
   HTTPClient http;
   http.begin(serverHex.c_str());
   int httpResponseCode = http.GET();
   if (httpResponseCode>0) {
-    String currentPlayer = http.getString(); 
+    currentPlayer = http.getString();
   }
   // current player = welke aan de beurt is 
 }

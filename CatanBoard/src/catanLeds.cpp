@@ -12,6 +12,7 @@ CRGB leds[NUM_LEDS];
 
 catanState *statePointer;
 byte* playerLocations[NUM_LEDS];
+byte* level[NUM_LEDS];
 
 byte defaultPlayerLocation = 2;
 
@@ -123,21 +124,21 @@ void showPlayerLocations() {
 // leds[i] = playerlocations[i]level[i]
 // playerLocations[46] = &statePointer->corner(1)->player;
 
-void colordivider(){
-    CRGB PlayerColorsArray[4][2];
-    {Blue , Lightblue},
-    {Green , Lightgreen},
-    {Yellow, Orange},
-    {Red, Purple}  
-    
-    leds[i] = CRGB::PlayerColorArray[/*PLAYER in i*/][/*LEVEL in i*/];               /*this into showplayerlocation, this is wrong, no i use*/
-}
+void colordivider() {
+    // Declare a 2D array with player colors
+    CRGB PlayerColorsArray[4][2] = {
+        {CRGB::Blue, CRGB::LightBlue},    // Player 1: Blue and LightBlue
+        {CRGB::Green, CRGB::LightGreen},  // Player 2: Green and LightGreen
+        {CRGB::Yellow, CRGB::Orange},     // Player 3: Yellow and Orange
+        {CRGB::Red, CRGB::Purple}         // Player 4: Red and Purple
+    };
 
-
-// V gedaan V
-void getroaddata() {
-    for (int i = 0; i < 72; i++){
-        &statePointer->edges[i].setPlayer(1);
+    for (int i = 0; i < NUM_LEDS; i++) {
+        int playerIndex = *playerLocations[i];  // Get the player index from playerlocations array
+        int levelIndex = *level[i];             // Get the level index from the level array
+        
+        // Set the LED color based on the player and level
+        leds[i] = PlayerColorsArray[playerIndex][levelIndex];
     }
 }
 
