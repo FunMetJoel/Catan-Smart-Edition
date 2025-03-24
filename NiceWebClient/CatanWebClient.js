@@ -181,7 +181,7 @@ class Corner extends CanvasObject {
 }
 
 class Road extends CanvasObject {
-    constructor(px, py, sx, sy, roadX, roadY, rotation = 0) {
+    constructor(px, py, sx, sy, roadX, roadY, rotation = 0, index=0) {
         super(px, py, sx, sy);
         this.player = 0;
         this.roadX = roadX;
@@ -194,6 +194,12 @@ class Road extends CanvasObject {
             image.src = imageUrls[i];
             this.images.push(image);
         }
+
+        this.text = new TextObject(0, 0, 0.5, 0.5, index, "Arial", "#FFFFFF");
+        this.lastUpdateTimestamp = 0;
+        // this.addChild(
+        //     this.text
+        // );
     }
 
     draw(ctx, objectCenter, objectSize) {
@@ -300,7 +306,7 @@ class CatanWebClient extends ObjectCanvas {
                 }else if (j%2 == 0 && i % 2 == 1) {
                     rotation = 1.04719755
                 }
-                var road = new Road(roadX, roadY, 3*roadSize, 2.4*roadSize, i, j, rotation);
+                var road = new Road(roadX, roadY, 3*roadSize, 2.4*roadSize, i, j, rotation, this.roads.length);
                 this.roads.push(road);
                 map.addChild(road);
             }

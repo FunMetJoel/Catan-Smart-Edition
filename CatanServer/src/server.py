@@ -13,25 +13,66 @@ import time
 import threading
 import logging
 import csv
+import argparse
+import torch
 
 import catanData as Catan
 import compiledCordinateSystem as ccs
 import firstTree as firstTreeBot
 import secondTree as secondTreeBot
+import firstNN as firstNNBot
+import secondNN as secondNNBot
+import thirdNN as thirdNNBot
+import fourthNN as fourthNNBot
+import randomBot
+
+print("Imports done")
 
 catanGame = Catan.CatanState()
 
+dataonly = False
+parser = argparse.ArgumentParser()
+parser.add_argument("--dataonly", help="Only start the server for data collection", action="store_true")
+args = parser.parse_args()
+if args.dataonly:
+    dataonly = True
+
 players = [
+    # ('bot', randomBot.randomBot()),
+    # ('bot', randomBot.randomBot()),
+    # ('bot', randomBot.randomBot()),
+    # ('bot', randomBot.randomBot()),
+    # ('bot', firstNNBot.firstNN()),
+    # ('bot', secondNNBot.secondNN()),
+    # ('bot', fourthNNBot.forthNN()),
+    # ('bot', fourthNNBot.forthNN()),
+    # ('bot', fourthNNBot.forthNN()),
+    # ('bot', fourthNNBot.forthNN()),
     # ('player', '127.0.0.1'),
     # ('player', '127.0.0.1'),
     # ('player', '127.0.0.1'),
-    # ('player', '127.0.0.1'),
-    ('bot', firstTreeBot.firstTreeBot()),
-    ('bot', firstTreeBot.firstTreeBot()),
+    ('player', '127.0.0.1'),
+    # ('bot', firstTreeBot.firstTreeBot()),
+    # ('bot', firstTreeBot.firstTreeBot()),
+    # ('bot', secondTreeBot.secondTreeBot()),
+    ('bot', secondTreeBot.secondTreeBot()),
+    ('bot', secondTreeBot.secondTreeBot()),
     ('bot', firstTreeBot.firstTreeBot()),
     # ('bot', firstTreeBot.firstTreeBot()),
-    ('bot', secondTreeBot.secondTreeBot()),
 ]
+
+# firstNN
+#players[3][1].model.load_state_dict(torch.load("D:/AIModels-Catan/firstNN_model2024-12-25-21-37-33.pth"))
+
+# secondNN
+# players[3][1].model.load_state_dict(torch.load("D:/AIModels-Catan/secondNN_model2024-12-27-22-06-01.pth"))
+
+# players[0][1].model.load_state_dict(torch.load("C:/Users/Informatica/Documents/GitHub/Catan-Smart-Edition/CatanServer/src/bots/2025-02-11-23-07-10/model4NN-1.7610000000000003-2025-02-11-23-07-10.pth"))
+# players[1][1].model.load_state_dict(torch.load("C:/Users/Informatica/Documents/GitHub/Catan-Smart-Edition/CatanServer/src/bots/2025-02-11-23-07-10/model4NN-1.7610000000000003-2025-02-11-23-07-10.pth"))
+# players[2][1].model.load_state_dict(torch.load("C:/Users/Informatica/Documents/GitHub/Catan-Smart-Edition/CatanServer/src/bots/2025-02-11-23-07-10/model4NN-1.7610000000000003-2025-02-11-23-07-10.pth"))
+# players[3][1].model.load_state_dict(torch.load("C:/Users/Informatica/Documents/GitHub/Catan-Smart-Edition/CatanServer/src/bots/2025-02-11-23-07-10/model4NN-1.7610000000000003-2025-02-11-23-07-10.pth"))
+
+
 CardsOpen = False
 
 lastMoveTimestamp = 0
@@ -50,11 +91,28 @@ def mainloop():
     with open(f'gameData-{serverStartTime}.csv', mode='w') as file:
         writer = csv.writer(file)
         writer.writerow(['WinningPlayer', 'GameStart', 'GameEnd', 'p1Points', 'p2Points', 'p3Points', 'p4Points'])
-    
-    
+        
     setupBoard()
+    
     lastPlayer = -1
     while True:
+        while catanGame.round < 2:
+            if not dataonly:
+                time.sleep(0.25)
+            if players[catanGame.currentPlayer][0] == 'bot':
+                try:
+                    # if catanGame.currentPlayer == 3:
+                    #     raise Exception
+                    
+                    players[catanGame.currentPlayer][1].make_opening_move(catanGame)
+                    print ("Bot made opening move")
+                except:    
+                    print("Bot failed to make opening move, using tree")
+                    tree.make_opening_move(catanGame)
+                    
+                catanGame.endTurn()
+        
+        print(catanGame.currentPlayer)
         if lastPlayer != catanGame.currentPlayer:
             print(catanGame.currentPlayer, )
             lastPlayer = catanGame.currentPlayer
@@ -65,7 +123,8 @@ def mainloop():
         else:
             pass
         
-        #time.sleep(0.25)
+        if not dataonly:
+            time.sleep(0.25)
         
         if catanGame.points.max() >= 10:
             # save game data
@@ -85,16 +144,9 @@ def setupBoard():
     global lastMoveTimestamp
     global gameStartTimestamp
     catanGame = Catan.CatanState()
-    
-    while catanGame.round < 2:
-        tree.make_opening_move(catanGame)
-        catanGame.endTurn()
-        
+
     lastMoveTimestamp = dt.datetime.now()
     gameStartTimestamp = dt.datetime.now()
-    
-    # for i in range(54):
-    #     catanGame.corners[i][0] = 1
     
     
 app = flask.Flask(__name__)
@@ -117,6 +169,9 @@ def checkIfAllowedRoute(player, ip, isGet):
         
     if players[player][0] == 'bot':
         return False
+    
+    return True
+    #TODO: check if ip is correct, nu ff uitgezet voor testen
     if players[player][1] == ip:
         return True
     
@@ -136,7 +191,7 @@ def get_ip():
 
 @app.route('/getGameStartTimestamp')
 def get_game_start_timestamp():
-    return flask.jsonify(gameStartTimestamp.timestamp())
+    return flask.jsonify(gameStartTimestamp)
 
 @app.route('/getActionTree')
 def get_action_tree():
@@ -326,17 +381,26 @@ def get_materials(p):
 
 @app.route('/trade/<int:give>/<int:get>')
 def trade(give, get):
+    if not checkIfAllowedRoute(catanGame.currentPlayer, flask.request.remote_addr, False):
+        return flask.jsonify("Not Allowed")
     catanGame.tradeWithBank(give, get)
     return flask.jsonify("Trade Made")
 
 @app.route('/endTurn')
 def end_turn():
+    if not checkIfAllowedRoute(catanGame.currentPlayer, flask.request.remote_addr, False):
+        return flask.jsonify("Not Allowed")
     catanGame.endTurn()
     return flask.jsonify("Turn Ended")
 
 
 def RUN():
     threading.Thread(target=mainloop).start()
+    
+    # check if --dataonly is given
+    if dataonly:
+        return
+    
     app.run(
         host='0.0.0.0',	
         port=5000,
