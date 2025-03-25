@@ -31,9 +31,9 @@ void loop() {
       //readpins();  <- 
       //setuppininfo; <- send the stuff to the main
     }
-    getHex();
-    getHouse();
-    getRoad(); 
+    getHex(&state);
+    getHouse(&state);
+    getRoad(&state); 
     colordivider();  
   }
   else {

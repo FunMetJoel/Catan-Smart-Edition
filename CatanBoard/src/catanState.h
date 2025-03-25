@@ -39,6 +39,7 @@ class corner {
         corner(byte player, byte level);
         byte player;
         byte level;
+        void setData(byte player, byte level);
     private:
         
 };

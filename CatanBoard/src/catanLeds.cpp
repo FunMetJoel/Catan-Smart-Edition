@@ -125,21 +125,20 @@ void showPlayerLocations() {
 // playerLocations[46] = &statePointer->corner(1)->player;
 
 void colordivider() {
-    // Declare a 2D array with player colors
-    CRGB PlayerColorsArray[4][2] = {
-        {CRGB::Blue, CRGB::LightBlue},    // Player 1: Blue and LightBlue
-        {CRGB::Green, CRGB::LightGreen},  // Player 2: Green and LightGreen
-        {CRGB::Yellow, CRGB::Orange},     // Player 3: Yellow and Orange
-        {CRGB::Red, CRGB::Purple}         // Player 4: Red and Purple
+    CRGB PlayerColorsArray[5][2] = {
+        {CRGB::Black, CRGB::Black},   // geen Player
+        {CRGB::Red, CRGB::Purple},    // player 1: Blue and LightBlue Red and Purple
+        {CRGB::Green, CRGB::LightGreen},  // player 2: Green and LightGreen
+        {CRGB::Blue, CRGB::LightBlue},     // player 3: Blue and LightBlue
+        {CRGB::Yellow, CRGB::Orange}         // player 4: Yellow and Orange 
     };
 
     for (int i = 0; i < NUM_LEDS; i++) {
-        int playerIndex = *playerLocations[i];  // Get the player index from playerlocations array
-        int levelIndex = *level[i];             // Get the level index from the level array
-        
-        // Set the LED color based on the player and level
+        int playerIndex = *playerLocations[i]; 
+        int levelIndex = *level[i];             
         leds[i] = PlayerColorsArray[playerIndex][levelIndex];
     }
+    FastLED.show();
 }
 
 void errorLight() {

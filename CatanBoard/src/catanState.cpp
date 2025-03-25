@@ -245,7 +245,13 @@ corner::corner() {
     player = 0;
     level = 0;
 }
+
 corner::corner(byte player, byte level) {
+    this->player = player;
+    this->level = level;
+}
+
+void corner::setData(byte player, byte level) {
     this->player = player;
     this->level = level;
 }

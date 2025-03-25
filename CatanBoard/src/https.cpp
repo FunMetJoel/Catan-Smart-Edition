@@ -17,7 +17,7 @@ String serverCity = "http://192.168.1.35:5000";
 
 
 void setupHttp() {
-
+  statePointer = pstate;
   WiFi.begin(ssid, password);
   if(WiFi.status() != WL_CONNECTED) {
     bool wificonnect = true; //<-deze kan weg
@@ -28,7 +28,7 @@ void setupHttp() {
   }
 }
 
-void getRoad() {
+void getRoad(catanState *pstate) {
   HTTPClient http;
   http.begin(serverRoad.c_str());
   int httpResponseCode = http.GET();
@@ -43,7 +43,7 @@ void getRoad() {
   }
 }
 
-void getHouse() {
+void getHouse(catanState *pstate) {
   HTTPClient http;
   http.begin(serverHouse.c_str());
   int httpResponseCode = http.GET();
@@ -59,7 +59,7 @@ void getHouse() {
   }
 }
 
-void getHex() {
+void getHex(catanState *pstate) {
   HTTPClient http;
   http.begin(serverHex.c_str());
   int httpResponseCode = http.GET();
@@ -112,7 +112,8 @@ void getCurrentPlayer(String currentPlayer) {
   http.begin(serverHex.c_str());
   int httpResponseCode = http.GET();
   if (httpResponseCode>0) {
-    currentPlayer = http.getString();
+    String currentPlayerString = http.getString();  // Get the currentPlayer as a string
+    currentPlayer = currentPlayerString.toInt();
   }
   // current player = welke aan de beurt is 
 }
