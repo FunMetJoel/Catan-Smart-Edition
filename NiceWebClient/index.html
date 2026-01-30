@@ -252,51 +252,69 @@
             });
             getMaterials(2)
             .then(materials => {
-                document.getElementById("wood2").innerText = materials[0];
-                document.getElementById("brick2").innerText = materials[1];
-                document.getElementById("wheat2").innerText = materials[2];
-                document.getElementById("sheep2").innerText = materials[3];
-                document.getElementById("ore2").innerText = materials[4];
+                if (materials) {
+                    document.getElementById("wood2").innerText = materials[0];
+                    document.getElementById("brick2").innerText = materials[1];
+                    document.getElementById("wheat2").innerText = materials[2];
+                    document.getElementById("sheep2").innerText = materials[3];
+                    document.getElementById("ore2").innerText = materials[4];
+                }
             });
             getMaterials(3)
             .then(materials => {
-                document.getElementById("wood3").innerText = materials[0];
-                document.getElementById("brick3").innerText = materials[1];
-                document.getElementById("wheat3").innerText = materials[2];
-                document.getElementById("sheep3").innerText = materials[3];
-                document.getElementById("ore3").innerText = materials[4];
+                if (materials) {
+                    document.getElementById("wood3").innerText = materials[0];
+                    document.getElementById("brick3").innerText = materials[1];
+                    document.getElementById("wheat3").innerText = materials[2];
+                    document.getElementById("sheep3").innerText = materials[3];
+                    document.getElementById("ore3").innerText = materials[4];
+                }
             });
             getMaterials(4)
             .then(materials => {
-                document.getElementById("wood4").innerText = materials[0];
-                document.getElementById("brick4").innerText = materials[1];
-                document.getElementById("wheat4").innerText = materials[2];
-                document.getElementById("sheep4").innerText = materials[3];
-                document.getElementById("ore4").innerText = materials[4];
+                if (materials) {
+                    document.getElementById("wood4").innerText = materials[0];
+                    document.getElementById("brick4").innerText = materials[1];
+                    document.getElementById("wheat4").innerText = materials[2];
+                    document.getElementById("sheep4").innerText = materials[3];
+                    document.getElementById("ore4").innerText = materials[4];
+                }
             });
             getPoints(1)
             .then(points => {
-                document.getElementById("points1").innerText = points;
+                if (points) {
+                    document.getElementById("points1").innerText = points;
+                }
             });
             getPoints(2)
             .then(points => {
-                document.getElementById("points2").innerText = points;
+                if (points) {
+                    document.getElementById("points2").innerText = points;
+                }
             });
             getPoints(3)
             .then(points => {
-                document.getElementById("points3").innerText = points;
+                if (points) {
+                    document.getElementById("points3").innerText = points;
+                }
             });
             getPoints(4)
             .then(points => {
-                document.getElementById("points4").innerText = points;
+                if (points) {
+                    document.getElementById("points4").innerText = points;
+                }
             });
 
             getLastRoll().then(roll => {
-                document.getElementById("lastRoll").innerText = roll;
+                if (roll) {
+                    document.getElementById("lastRoll").innerText = roll;
+                }
             });
 
             getCurrentPlayer().then(player => {
-                document.getElementById("currentPlayer").innerText = player+1;
+                if (player) {
+                    document.getElementById("currentPlayer").innerText = player+1;
+                }
             });
         }
     </script>
