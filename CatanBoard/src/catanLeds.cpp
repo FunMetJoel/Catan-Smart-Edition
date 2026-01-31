@@ -123,56 +123,56 @@ void showPlayerLocations() {
 // leds[i] = playerlocations[i]level[i]
 // playerLocations[46] = &statePointer->corner(1)->player;
 
-void colordivider(){
-    CRGB PlayerColorsArray[4][2];
-    {Blue , Lightblue},
-    {Green , Lightgreen},
-    {Yellow, Orange},
-    {Red, Purple}  
+// void colordivider(){
+//     CRGB PlayerColorsArray[4][2];
+//     {Blue , Lightblue},
+//     {Green , Lightgreen},
+//     {Yellow, Orange},
+//     {Red, Purple}  
     
-    leds[i] = CRGB::PlayerColorArray[/*PLAYER in i*/][/*LEVEL in i*/];               /*this into showplayerlocation, this is wrong, no i use*/
-}
+//     leds[i] = CRGB::PlayerColorArray[/*PLAYER in i*/][/*LEVEL in i*/];               /*this into showplayerlocation, this is wrong, no i use*/
+// }
 
 
-// V gedaan V
-void getroaddata() {
-    for (int i = 0; i < 72; i++){
-        &statePointer->edges[i].setPlayer(1);
-    }
-}
+// // V gedaan V
+// void getroaddata() {
+//     for (int i = 0; i < 72; i++){
+//         &statePointer->edges[i].setPlayer(1);
+//     }
+// }
 
-void errorLight() {
-    for (int i = 0; i < NUM_LEDS; i++) {
-        leds[i] = CRGB(0, 0, 255);
-    }
-    FastLED.show();
-    delay(2000);
-    for (int i = 0; i < NUM_LEDS; i++) {
-        leds[i] = CRGB(0, 0, 0);
-    }
-    FastLED.show();
-}
+// void errorLight() {
+//     for (int i = 0; i < NUM_LEDS; i++) {
+//         leds[i] = CRGB(0, 0, 255);
+//     }
+//     FastLED.show();
+//     delay(2000);
+//     for (int i = 0; i < NUM_LEDS; i++) {
+//         leds[i] = CRGB(0, 0, 0);
+//     }
+//     FastLED.show();
+// }
 
-void currentPlayerLight() {
-    CRGB currentPlayerLightList[4] = {CRGB::Red, CRGB::Blue, CRGB::Green, CRGB::Yellow};
-    int currentplayer = 1;
-    if (currentplayer > 4) {
-        winnerLight(); 
-    }
-    currentplayer =- 1;
-    for (int i = 0; i < 4; i++) {
+// void currentPlayerLight() {
+//     CRGB currentPlayerLightList[4] = {CRGB::Red, CRGB::Blue, CRGB::Green, CRGB::Yellow};
+//     int currentplayer = 1;
+//     if (currentplayer > 4) {
+//         winnerLight(); 
+//     }
+//     currentplayer =- 1;
+//     for (int i = 0; i < 4; i++) {
         
-        if (i = currentplayer) {
-            leds[NUM_LEDS + i] = currentPlayerLightList[i];
-        }
-        else {
-            leds[NUM_LEDS + i] = CRGB::Black;
-        }
-    }
-}
+//         if (i = currentplayer) {
+//             leds[NUM_LEDS + i] = currentPlayerLightList[i];
+//         }
+//         else {
+//             leds[NUM_LEDS + i] = CRGB::Black;
+//         }
+//     }
+// }
 
-void winnerLight() {
-    for (int i = 0; i < NUM_LEDS; i++) {
-        leds[i] = CRGB(0, 255, 0);
-    }       
-}
+// void winnerLight() {
+//     for (int i = 0; i < NUM_LEDS; i++) {
+//         leds[i] = CRGB(0, 255, 0);
+//     }       
+// }
