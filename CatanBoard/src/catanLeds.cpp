@@ -12,6 +12,7 @@ CRGB leds[NUM_LEDS];
 
 catanState *statePointer;
 byte* playerLocations[NUM_LEDS];
+byte* level[NUM_LEDS];
 
 byte defaultPlayerLocation = 2;
 

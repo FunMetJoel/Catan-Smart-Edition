@@ -1,12 +1,12 @@
 var serverURL = "";
+var httpType = "http";
 var gameStartTimestamp = 0;
 var lastRoll = 0;
 
 function connectToServer(serverurl) {
     
-    console.log("Connecting to server: " + serverurl);
-
-    fetch(`https://${serverurl}/ping`)
+    console.log("Connecting to server: " + serverurl + " with " + httpType);
+    fetch(`${httpType}://${serverurl}/ping`)
     .then(response => response.json())
     .then(
         response => {
@@ -23,12 +23,18 @@ function connectToServer(serverurl) {
     )
     .catch(error => {
         console.error('Error fetching tile data:', error);
+        if (httpType == "https") {
+            httpType = "http";
+        } else {
+            httpType = "https";
+            connectToServer(serverurl);
+        }
     });
 
 }
 
 async function getGameStartTimestamp() {
-    return fetch(`https://${serverURL}/getGameStartTimestamp`)
+    return fetch(`${httpType}://${serverURL}/getGameStartTimestamp`)
     .then(response => response.json())
     .then(data => {
         // console.log(Date.now(), data);
@@ -41,7 +47,7 @@ async function getGameStartTimestamp() {
 }
 
 async function getLastRoll() {
-    return fetch(`https://${serverURL}/getLastRoll`)
+    return fetch(`${httpType}://${serverURL}/getLastRoll`)
     .then(response => response.json())
     .then(data => {
         // console.log(data);
@@ -54,7 +60,7 @@ async function getLastRoll() {
 }
 
 async function getRoadsData() {
-    return fetch(`https://${serverURL}/getRoads`)
+    return fetch(`${httpType}://${serverURL}/getRoads`)
     .then(response => response.json())
     .then(data => {
         // console.log(data);
@@ -66,7 +72,7 @@ async function getRoadsData() {
 }
 
 async function getTileData(x, y) {
-    return fetch(`https://${serverURL}/getTile/${x}/${y}`)
+    return fetch(`${httpType}://${serverURL}/getTile/${x}/${y}`)
     .then(response => response.json())
     .then(data => {
         // console.log(data);
@@ -78,7 +84,7 @@ async function getTileData(x, y) {
 }
 
 async function setRoad(x, y) {
-    return fetch(`https://${serverURL}/setRoad/${x}/${y}`)
+    return fetch(`${httpType}://${serverURL}/setRoad/${x}/${y}`)
     .then(response => response.json())
     .then(data => {
         // console.log(data);
@@ -90,7 +96,7 @@ async function setRoad(x, y) {
 }
 
 async function setSettlement(x, y) {
-    return fetch(`https://${serverURL}/setSettlement/${x}/${y}`)
+    return fetch(`${httpType}://${serverURL}/setSettlement/${x}/${y}`)
     .then(response => response.json())
     .then(data => {
         // console.log(data);
@@ -102,7 +108,7 @@ async function setSettlement(x, y) {
 }
 
 async function setCity(x, y) {
-    return fetch(`https://${serverURL}/setCity/${x}/${y}`)
+    return fetch(`${httpType}://${serverURL}/setCity/${x}/${y}`)
     .then(response => response.json())
     .then(data => {
         // console.log(data);
@@ -114,7 +120,7 @@ async function setCity(x, y) {
 }
 
 async function getSettlementData() {
-    return fetch(`https://${serverURL}/getSettlements`)
+    return fetch(`${httpType}://${serverURL}/getSettlements`)
     .then(response => response.json())
     .then(data => {
         // console.log(data);
@@ -126,7 +132,7 @@ async function getSettlementData() {
 }
 
 async function getRoadAvailability(p) {
-    return fetch(`https://${serverURL}/getPossibleRoads/${p}`)
+    return fetch(`${httpType}://${serverURL}/getPossibleRoads/${p}`)
     .then(response => response.json())
     .then(data => {
         // console.log(data);
@@ -138,7 +144,7 @@ async function getRoadAvailability(p) {
 }
 
 async function getSettlementAvailability(p) {
-    return fetch(`https://${serverURL}/getPossibleSettlements/${p}`)
+    return fetch(`${httpType}://${serverURL}/getPossibleSettlements/${p}`)
     .then(response => response.json())
     .then(data => {
         // console.log(data);
@@ -150,7 +156,7 @@ async function getSettlementAvailability(p) {
 }
 
 async function getMaterials(p) {
-    return fetch(`https://${serverURL}/getMaterials/${p}`)
+    return fetch(`${httpType}://${serverURL}/getMaterials/${p}`)
     .then(response => response.json())
     .then(data => {
         // console.log(data);
@@ -162,7 +168,7 @@ async function getMaterials(p) {
 }
 
 async function getPoints(p) {
-    return fetch(`https://${serverURL}/getPoints/${p}`)
+    return fetch(`${httpType}://${serverURL}/getPoints/${p}`)
     .then(response => response.json())
     .then(data => {
         // console.log(data);
@@ -174,7 +180,7 @@ async function getPoints(p) {
 }
 
 async function endTurn() {
-    return fetch(`https://${serverURL}/endTurn`)
+    return fetch(`${httpType}://${serverURL}/endTurn`)
     .then(response => response.json())
     .then(data => {
         // console.log(data);
@@ -186,7 +192,7 @@ async function endTurn() {
 }
 
 async function playUntill(p) {
-    return fetch(`https://${serverURL}/playUntilPlayer/${p}`)
+    return fetch(`${httpType}://${serverURL}/playUntilPlayer/${p}`)
     .then(response => response.json())
     .then(data => {
         // console.log(data);
@@ -198,7 +204,7 @@ async function playUntill(p) {
 }
 
 async function aiPlay() {
-    return fetch(`https://${serverURL}/makeAIMove`)
+    return fetch(`${httpType}://${serverURL}/makeAIMove`)
     .then(response => response.json())
     .then(data => {
         // console.log(data);
@@ -210,7 +216,7 @@ async function aiPlay() {
 }
 
 async function getCurrentPlayer() {
-    return fetch(`https://${serverURL}/getCurrentPlayer`)
+    return fetch(`${httpType}://${serverURL}/getCurrentPlayer`)
     .then(response => response.json())
     .then(data => {
         // console.log(data);
@@ -222,7 +228,7 @@ async function getCurrentPlayer() {
 }
 
 async function resetGameIfOver() {
-    return fetch(`https://${serverURL}/resetGameIfOver`)
+    return fetch(`${httpType}://${serverURL}/resetGameIfOver`)
     .then(response => response.json())
     .then(data => {
         // console.log(data);
@@ -234,7 +240,7 @@ async function resetGameIfOver() {
 }
 
 async function getRobberData() {
-    return fetch(`https://${serverURL}/getRobberData`)
+    return fetch(`${httpType}://${serverURL}/getRobberData`)
     .then(response => response.json())
     .then(data => {
         // console.log(data);
@@ -246,7 +252,7 @@ async function getRobberData() {
 }
 
 async function trade(give, get) {
-    return fetch(`https://${serverURL}/trade/${give}/${get}`)
+    return fetch(`${httpType}://${serverURL}/trade/${give}/${get}`)
     .then(response => response.json())
     .then(data => {
         // console.log(data);

@@ -12,5 +12,6 @@ void setupPlayerLocationsLeds();
 void showPlayerLocations();
 void CoardinatesExplination();
 void errorLight();
+void colordivider();
 
 #endif // CATANLEDS_H

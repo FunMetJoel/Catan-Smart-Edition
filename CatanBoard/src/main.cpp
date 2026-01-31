@@ -10,8 +10,10 @@
 #include "catanState.h"
 #include "https.h"
 
+
 catanState state;
 bool error = false;
+String currentPlayer;
 
 void setup() {
   Serial.begin(9600);
@@ -23,18 +25,22 @@ void setup() {
 
 
 void loop() {
-  if (error = false) {
-    
-    //getdata
-
-    //pushinput
-
-    //lights
+  if (error == false) {
+    getCurrentPlayer(currentPlayer);
+    if(currentPlayer == "1") { //if player = 1 your turn = true;
+      //readpins();  <- 
+      //setuppininfo; <- send the stuff to the main
+    }
+    getHex(&state);
+    getHouse(&state);
+    getRoad(&state); 
+    colordivider();  
   }
   else {
     errorLight();
     delay(1000);
-    setup();  
+    setup();
+    error = false; 
   }
 }
 
@@ -97,4 +103,3 @@ void loop() {
 //     }
 //   }
 // }
-
